@@ -1,0 +1,39 @@
+version: '3.5'
+services:
+  api:
+    depends_on:
+      - db
+    build:
+      context: .
+      dockerfile: ./docker/go/Dockerfile
+      target: build
+    container_name: l-semi-chat-api
+    environment:
+      MYSQL_USER: worker
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: ls_chat
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+    volumes:
+      - .:/go/src/app
+    ports:
+      - 8080:8080
+    restart: always
+    command: realize start
+
+  db:
+    image: mysql:5.7
+    container_name: l-semi-chat-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ls_chat
+      MYSQL_USER: worker
+      MYSQL_PASSWORD: password
+      TZ: 'Asia/Tokyo'
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      # この辺は必要なら適宜
+      - ./db/mysql/init.d:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
+    restart: always
