@@ -4,7 +4,6 @@ import (
 	"app/api/constants"
 	"app/api/infrastructure/lcontext"
 	"app/api/infrastructure/lsession"
-	"app/api/llog"
 	"app/api/presentation/response"
 	"context"
 	"net/http"
@@ -22,8 +21,6 @@ func CommonMiddleware(next http.Handler) http.Handler {
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO: 実装
-		llog.Debug("auth middleware")
 		ctx := r.Context()
 		if ctx == nil {
 			ctx = context.Background()
@@ -35,7 +32,6 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 		claims := token.Claims.(jwt.MapClaims)
-		// TODO: claimのkeyをconstantsにしたい
 		ctx = lcontext.SetUserID(ctx, claims[constants.JWTUserIDClaimsKey].(string))
 
 		next.ServeHTTP(w, r.WithContext(ctx))

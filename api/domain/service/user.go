@@ -24,6 +24,8 @@ type UserService interface {
 	GetAll() ([]*entity.User, error)
 	Delete(id string) error
 	GetFollows(id string) ([]*entity.User, error)
+	AddFollow(userID, followedUserID string) error
+	DeleteFollow(userID, followedUserID string) error
 	GetFollowers(id string) ([]*entity.User, error)
 }
 
@@ -144,6 +146,26 @@ func (us *userService) GetFollows(id string) ([]*entity.User, error) {
 		return nil, errors.Wrap(err, "failed to get follows")
 	}
 	return users, nil
+}
+
+func (us *userService) AddFollow(userID, followedUserID string) error {
+	id, err := uuid.NewRandom()
+	if err != nil {
+		return errors.Wrap(err, "failed to generate uuid")
+	}
+	err = us.userRepository.AddFollow(id.String(), userID, followedUserID)
+	if err != nil {
+		return errors.Wrap(err, "failed to add follow")
+	}
+	return nil
+}
+
+func (us *userService) DeleteFollow(userID, followedUserID string) error {
+	err := us.userRepository.DeleteFollow(userID, followedUserID)
+	if err != nil {
+		return errors.Wrap(err, "failed to delete follow")
+	}
+	return nil
 }
 
 func (us *userService) GetFollowers(id string) ([]*entity.User, error) {

@@ -186,6 +186,35 @@ func (repo *userRepository) FindFollows(id string) ([]*entity.User, error) {
 	return users, nil
 }
 
+func (repo *userRepository) AddFollow(id, userID, followedUserID string) error {
+	_, err := repo.sqlHandler.Exec(`
+		INSERT INTO users_followers(id, user_id, followed_user_id)
+		VALUES (?, ?, ?)
+	`,
+		id,
+		userID,
+		followedUserID,
+	)
+	if err != nil {
+		return errors.Wrap(err, "failed to insert db")
+	}
+	return nil
+}
+
+func (repo *userRepository) DeleteFollow(userID, followedUserID string) error {
+	_, err := repo.sqlHandler.Exec(`
+		DELETE FROM users_followers
+		WHERE user_id=? and followed_user_id=?
+	`,
+		userID,
+		followedUserID,
+	)
+	if err != nil {
+		return errors.Wrap(err, "failed to delete from db")
+	}
+	return nil
+}
+
 func (repo *userRepository) FindFollowers(id string) ([]*entity.User, error) {
 	rows, err := repo.sqlHandler.Query(`
 		SELECT u.id, u.user_id, u.name, u.mail, u.image, u.profile, u.created_at, u.updated_at, u.login_at

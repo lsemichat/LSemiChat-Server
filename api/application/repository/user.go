@@ -16,5 +16,7 @@ type UserRepository interface {
 	FindByMail(mail string) (*entity.User, error)
 	DeleteByID(id string) error
 	FindFollows(id string) ([]*entity.User, error)
+	AddFollow(id, userID, followedUserID string) error
+	DeleteFollow(userID, followedUserID string) error
 	FindFollowers(id string) ([]*entity.User, error)
 }

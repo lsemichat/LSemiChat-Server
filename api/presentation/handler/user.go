@@ -25,6 +25,8 @@ type UserHandler interface {
 	GetAll(w http.ResponseWriter, r *http.Request)
 	DeleteMe(w http.ResponseWriter, r *http.Request)
 	GetFollows(w http.ResponseWriter, r *http.Request)
+	Follow(w http.ResponseWriter, r *http.Request)
+	Unfollow(w http.ResponseWriter, r *http.Request)
 	GetFollowers(w http.ResponseWriter, r *http.Request)
 }
 
@@ -202,6 +204,36 @@ func (uh *userHandler) GetFollows(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response.Success(w, response.ConvertToUsersResponse(users))
+}
+
+func (uh *userHandler) Follow(w http.ResponseWriter, r *http.Request) {
+	followedUUID := ReadPathParam(r, "followedUUID")
+	userID, err := lcontext.GetUserIDFromContext(r.Context())
+	if err != nil {
+		response.Unauthorized(w, errors.Wrap(err, "failed to authentication"), "failed to authentication")
+		return
+	}
+	err = uh.userInteractor.AddFollow(userID, followedUUID)
+	if err != nil {
+		response.InternalServerError(w, errors.Wrap(err, "failed to follow"), "failed to follow")
+		return
+	}
+	response.NoContent(w)
+}
+
+func (uh *userHandler) Unfollow(w http.ResponseWriter, r *http.Request) {
+	followedUUID := ReadPathParam(r, "followedUUID")
+	userID, err := lcontext.GetUserIDFromContext(r.Context())
+	if err != nil {
+		response.Unauthorized(w, errors.Wrap(err, "failed to authentication"), "failed to authentication")
+		return
+	}
+	err = uh.userInteractor.DeleteFollow(userID, followedUUID)
+	if err != nil {
+		response.InternalServerError(w, errors.Wrap(err, "failed to unfollow"), "failed to unfollow")
+		return
+	}
+	response.NoContent(w)
 }
 
 func (uh *userHandler) GetFollowers(w http.ResponseWriter, r *http.Request) {

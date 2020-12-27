@@ -62,17 +62,18 @@ func (s *server) Route(appHandler *handler.AppHandler) {
 		authRouter.HandleFunc("/account/password", appHandler.UserHandler.UpdatePassword).Methods("PUT")
 		authRouter.HandleFunc("/account", appHandler.UserHandler.DeleteMe).Methods("DELETE")
 
+		authRouter.HandleFunc("/users/{followedUUID}/follows", appHandler.UserHandler.Follow).Methods("POST")
+		authRouter.HandleFunc("/users/{followedUUID}/follows", appHandler.UserHandler.Unfollow).Methods("DELETE")
+
 		// TODO: impl
 		// authRouter.HandleFunc("/account/tags").Methods("POST")
 		// authRouter.HandleFunc("/account/tags/{tagID}").Methods("DELETE")
 
+		// NOTE: 多分あとで
+		// authRouter.HandleFunc("/users/{userUUID}/evaluations/{evaluationID}").Methods("POST")
+		// authRouter.HandleFunc("/users/{userUUID}/evaluations/{evaluationID}").Methods("DELETE")
+
 	}
-
-	// s.Handler.HandleFunc("/account", appHandler.UserHandler.Create).Methods("POST")
-	// s.Handler.HandleFunc("/account", appHandler.UserHandler.GetAll).Methods("GET")
-
-	// s.Handler.HandleFunc("/users/{id}", appHandler.UserHandler.GetByID)
-	// s.Handler.HandleFunc("/users", appHandler.UserHandler.GetAll)
 
 }
 

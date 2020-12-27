@@ -18,6 +18,8 @@ type UserInteractor interface {
 	GetAll() ([]*entity.User, error)
 	Delete(userID string) error
 	GetFollows(id string) ([]*entity.User, error)
+	AddFollow(userID, followedUserID string) error
+	DeleteFollow(userID, followedUserID string) error
 	GetFollowers(id string) ([]*entity.User, error)
 }
 
@@ -135,6 +137,30 @@ func (ui *userInteractor) GetFollows(id string) ([]*entity.User, error) {
 		return nil, errors.Wrap(err, "failed to get follows")
 	}
 	return users, nil
+}
+
+func (ui *userInteractor) AddFollow(userID, followedUserID string) error {
+	user, err := ui.userService.GetByUserID(userID)
+	if err != nil {
+		return errors.Wrap(err, "failed to get user")
+	}
+	err = ui.userService.AddFollow(user.ID, followedUserID)
+	if err != nil {
+		return errors.Wrap(err, "failed to add follow")
+	}
+	return nil
+}
+
+func (ui *userInteractor) DeleteFollow(userID, followedUserID string) error {
+	user, err := ui.userService.GetByUserID(userID)
+	if err != nil {
+		return errors.Wrap(err, "failed to get user")
+	}
+	err = ui.userService.DeleteFollow(user.ID, followedUserID)
+	if err != nil {
+		return errors.Wrap(err, "failed to delete follow")
+	}
+	return nil
 }
 
 func (ui *userInteractor) GetFollowers(id string) ([]*entity.User, error) {
