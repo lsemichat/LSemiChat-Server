@@ -43,6 +43,8 @@ func (s *server) Route(appHandler *handler.AppHandler) {
 	s.Handler.Use(middleware.CommonMiddleware)
 	authRouter := s.Handler.PathPrefix("/").Subrouter()
 	authRouter.Use(middleware.AuthMiddleware)
+	adminRouter := s.Handler.PathPrefix("/").Subrouter()
+	// TODO: middleware
 
 	s.Handler.HandleFunc("/ping", pingHandler)
 
@@ -52,6 +54,7 @@ func (s *server) Route(appHandler *handler.AppHandler) {
 	s.Handler.HandleFunc("/users/{id}", appHandler.UserHandler.GetByID).Methods("GET")
 	s.Handler.HandleFunc("/users/{id}/follows", appHandler.UserHandler.GetFollows).Methods("GET")
 	s.Handler.HandleFunc("/users/{id}/followers", appHandler.UserHandler.GetFollowers).Methods("GET")
+	s.Handler.HandleFunc("/categories", appHandler.CategoryHandler.GetAll).Methods("GET")
 
 	{
 		authRouter.HandleFunc("/logout", appHandler.AuthHandler.Logout).Methods("DELETE")
@@ -68,6 +71,13 @@ func (s *server) Route(appHandler *handler.AppHandler) {
 		// TODO: impl
 		// authRouter.HandleFunc("/account/tags").Methods("POST")
 		// authRouter.HandleFunc("/account/tags/{tagID}").Methods("DELETE")
+
+	}
+
+	{
+		adminRouter.HandleFunc("/categories", appHandler.CategoryHandler.Create).Methods("POST")
+		adminRouter.HandleFunc("/categories/{id}", appHandler.CategoryHandler.Update).Methods("PUT")
+		adminRouter.HandleFunc("/categories/{id}", appHandler.CategoryHandler.Delete).Methods("DELETE")
 
 	}
 
