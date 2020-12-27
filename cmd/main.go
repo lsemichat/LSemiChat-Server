@@ -1,13 +1,21 @@
 package main
 
-import "net/http"
+import (
+	"app/api/infrastructure/database"
+	"app/api/llog"
+	"app/api/presentation/handler"
+	"app/api/presentation/server"
+)
 
 func main() {
-	http.HandleFunc("/ping", pingHandler)
+	sqlHandler, err := database.New()
+	if err != nil {
+		llog.Fatal(err)
+	}
 
-	http.ListenAndServe(":8080", nil)
-}
+	appHandler := handler.NewAppHandler(sqlHandler)
 
-func pingHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("pong"))
+	srv := server.New(":8080")
+	srv.Route(appHandler)
+	srv.Serve()
 }

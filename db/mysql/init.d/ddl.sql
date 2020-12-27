@@ -6,11 +6,12 @@ CREATE TABLE IF NOT EXISTS `ls_chat`.`users`(
     `user_id` VARCHAR(36) UNIQUE NOT NULL COMMENT 'ユーザid',
     `name` VARCHAR(64) NOT NULL COMMENT '名前',
     `image` VARCHAR(128) NOT NULL COMMENT '画像',
-    `profile` VARCHAR(150) COMMENT 'プロフィール',
-    `is_admin` TINYINT NOT NULL DEFAULT 0 COMMENT '権威',
+    `profile` VARCHAR(150) NOT NULL COMMENT 'プロフィール',
+    `is_admin` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '権威',
     `mail` VARCHAR(254) NOT NULL UNIQUE COMMENT 'メールアドレス',
     `login_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'ログイン日時',
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新日時',
     `password` VARCHAR(70) NOT NULL COMMENT 'パスワード'
 )
 COMMENT = 'ユーザ';
@@ -18,7 +19,7 @@ COMMENT = 'ユーザ';
 CREATE TABLE IF NOT EXISTS `ls_chat`.`threads`(
     `id` VARCHAR(36) PRIMARY KEY NOT NULL COMMENT 'id',
     `name` VARCHAR(32) NOT NULL COMMENT '名前',
-    `description` VARCHAR(150) COMMENT '説明',
+    `description` VARCHAR(150) NOT NULL COMMENT '説明',
     `limit_users` INTEGER COMMENT '上限人数',
     `user_id` VARCHAR(64) NOT NULL COMMENT '管理者',-- F
     `is_public` TINYINT NOT NULL DEFAULT 0 COMMENT '範囲',

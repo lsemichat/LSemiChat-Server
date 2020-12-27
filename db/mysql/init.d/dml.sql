@@ -2,7 +2,7 @@
 -- users
 INSERT INTO `ls_chat`.`users` (`id`,`user_id`,`name`,`mail`,`image`,`profile`,`is_admin`,`login_at`,`created_at`,`password`) VALUES ("11111111-1111-1111-1111-111111111111","userID1","name1","hoge@example.com","/image/path","profile1",1,cast('2019/10/11 08:08:08' as datetime),cast('2019/10/11 08:08:07' as datetime),"password1");
 INSERT INTO `ls_chat`.`users` (`id`,`user_id`,`name`,`mail`,`image`,`profile`,`is_admin`,`login_at`,`created_at`,`password`) VALUES ("22222222-2222-2222-2222-222222222222","userID2","name1","fuga@example.com","/image/path","profile1",0,cast('2019/09/11 08:08:08' as datetime),cast('2010/10/11 08:08:07' as datetime),"password1");
-INSERT INTO `ls_chat`.`users` (`id`,`user_id`,`name`,`mail`,`image`,`is_admin`,`login_at`,`created_at`,`password`) VALUES ("33333333-3333-3333-3333-333333333333","userID3","name3","hoge@sample.com","/image/path",0,cast('2018/06/11 08:08:08' as datetime),cast('2011/08/11 08:08:07' as datetime),"password1");
+-- INSERT INTO `ls_chat`.`users` (`id`,`user_id`,`name`,`mail`,`image`,`is_admin`,`login_at`,`created_at`,`password`) VALUES ("33333333-3333-3333-3333-333333333333","userID3","name3","hoge@sample.com","/image/path",0,cast('2018/06/11 08:08:08' as datetime),cast('2011/08/11 08:08:07' as datetime),"password1");
 INSERT INTO `ls_chat`.`users` (`id`,`user_id`,`name`,`mail`,`image`,`profile`,`login_at`,`created_at`,`password`) VALUES ("44444444-4444-4444-4444-444444444444","userID4","name4","fuga@sample.com","/image/path","profile",cast('2018/03/11 08:08:08' as datetime),cast('2016/10/11 08:08:07' as datetime),"password1");
 INSERT INTO `ls_chat`.`users` (`id`,`user_id`,`name`,`mail`,`image`,`profile`,`is_admin`,`created_at`,`password`) VALUES ("55555555-5555-5555-5555-555555555555","userID5","name5","hoge@hogeample.com","/image/path","profile",0,cast('2019/05/11 08:08:07' as datetime),"password1");
 INSERT INTO `ls_chat`.`users` (`id`,`user_id`,`name`,`mail`,`image`,`profile`,`is_admin`,`login_at`,`password`) VALUES ("66666666-6666-6666-6666-666666666666","userID6","name6","fuga@hogeample.com","/image/path","profile",0,cast('2019/10/11 08:08:07' as datetime),"password1");
@@ -19,7 +19,7 @@ INSERT INTO `ls_chat`.`users` (`id`,`user_id`,`name`,`mail`,`image`,`profile`,`i
 
 -- threads
 INSERT INTO `ls_chat`.`threads`(`id`,`name`,`description`,`limit_users`,`user_id`,`is_public`,`created_at`,`updated_at`) VALUES ("11111111-1111-1111-1111-111111111111","name1","description1",1,"11111111-1111-1111-1111-111111111111",1,cast('2018-11-24 11:56:40' as datetime),cast('2018-11-24 11:56:40' as datetime));
-INSERT INTO `ls_chat`.`threads`(`id`,`name`,`user_id`) VALUES ("22222222-2222-2222-2222-222222222222","name1","22222222-2222-2222-2222-222222222222");
+-- INSERT INTO `ls_chat`.`threads`(`id`,`name`,`user_id`) VALUES ("22222222-2222-2222-2222-222222222222","name1","22222222-2222-2222-2222-222222222222");
 
 -- messages
 INSERT INTO `ls_chat`.`messages` (id,message,created_at,grade,user_id,thread_id) VALUES ('11111111-1111-1111-1111-111111111111','おはよう','2019-12-09 07:14:22',DEFAULT,'11111111-1111-1111-1111-111111111111','11111111-1111-1111-1111-111111111111');
