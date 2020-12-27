@@ -38,9 +38,11 @@ func ConvertToUserResponse(user *entity.User) *UserResponse {
 }
 
 func ConvertToUsersResponse(users []*entity.User) *UsersResponse {
-	res := &UsersResponse{}
+	res := make([]*UserResponse, 0, len(users))
 	for _, user := range users {
-		res.Users = append(res.Users, ConvertToUserResponse(user))
+		res = append(res, ConvertToUserResponse(user))
 	}
-	return res
+	return &UsersResponse{
+		Users: res,
+	}
 }

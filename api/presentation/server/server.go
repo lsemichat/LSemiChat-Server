@@ -69,10 +69,6 @@ func (s *server) Route(appHandler *handler.AppHandler) {
 		// authRouter.HandleFunc("/account/tags").Methods("POST")
 		// authRouter.HandleFunc("/account/tags/{tagID}").Methods("DELETE")
 
-		// NOTE: 多分あとで
-		// authRouter.HandleFunc("/users/{userUUID}/evaluations/{evaluationID}").Methods("POST")
-		// authRouter.HandleFunc("/users/{userUUID}/evaluations/{evaluationID}").Methods("DELETE")
-
 	}
 
 }
