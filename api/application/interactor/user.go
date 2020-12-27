@@ -9,17 +9,16 @@ import (
 
 type UserInteractor interface {
 	Create(userID, name, mail, image, profile, password string) (*entity.User, error)
-
 	UpdateProfile(userID, name, mail, image, profile string) (*entity.User, error)
 	UpdateUserID(userID, newUserID string) (*entity.User, error)
 	UpdatePassword(userID, password string) (*entity.User, error)
-
 	GetByID(id string) (*entity.User, error)
 	GetByUserID(userID string) (*entity.User, error)
 	GetByMail(mail string) (*entity.User, error)
 	GetAll() ([]*entity.User, error)
-
 	Delete(userID string) error
+	GetFollows(id string) ([]*entity.User, error)
+	GetFollowers(id string) ([]*entity.User, error)
 }
 
 type userInteractor struct {
@@ -128,4 +127,20 @@ func (ui *userInteractor) Delete(userID string) error {
 		return errors.Wrap(err, "failed to delete")
 	}
 	return nil
+}
+
+func (ui *userInteractor) GetFollows(id string) ([]*entity.User, error) {
+	users, err := ui.userService.GetFollows(id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get follows")
+	}
+	return users, nil
+}
+
+func (ui *userInteractor) GetFollowers(id string) ([]*entity.User, error) {
+	users, err := ui.userService.GetFollowers(id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get followers")
+	}
+	return users, nil
 }

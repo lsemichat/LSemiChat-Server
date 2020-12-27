@@ -24,6 +24,8 @@ type UserHandler interface {
 	GetByID(w http.ResponseWriter, r *http.Request)
 	GetAll(w http.ResponseWriter, r *http.Request)
 	DeleteMe(w http.ResponseWriter, r *http.Request)
+	GetFollows(w http.ResponseWriter, r *http.Request)
+	GetFollowers(w http.ResponseWriter, r *http.Request)
 }
 
 func NewUserHandler(ui interactor.UserInteractor) UserHandler {
@@ -190,4 +192,24 @@ func (uh *userHandler) DeleteMe(w http.ResponseWriter, r *http.Request) {
 	}
 	lsession.EndSession(w, r)
 	response.NoContent(w)
+}
+
+func (uh *userHandler) GetFollows(w http.ResponseWriter, r *http.Request) {
+	id := ReadPathParam(r, "id")
+	users, err := uh.userInteractor.GetFollows(id)
+	if err != nil {
+		response.InternalServerError(w, errors.Wrap(err, "failed to get follows"), "failed to get follows")
+		return
+	}
+	response.Success(w, response.ConvertToUsersResponse(users))
+}
+
+func (uh *userHandler) GetFollowers(w http.ResponseWriter, r *http.Request) {
+	id := ReadPathParam(r, "id")
+	users, err := uh.userInteractor.GetFollowers(id)
+	if err != nil {
+		response.InternalServerError(w, errors.Wrap(err, "failed to get followers"), "failed to get followers")
+		return
+	}
+	response.Success(w, response.ConvertToUsersResponse(users))
 }

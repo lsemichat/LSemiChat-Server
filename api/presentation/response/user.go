@@ -18,6 +18,10 @@ type UserResponse struct {
 	LoginAt   *time.Time `json:"login_at"`
 }
 
+type UsersResponse struct {
+	Users []*UserResponse `json:"users"`
+}
+
 func ConvertToUserResponse(user *entity.User) *UserResponse {
 	return &UserResponse{
 		ID:        user.ID,
@@ -31,4 +35,12 @@ func ConvertToUserResponse(user *entity.User) *UserResponse {
 		UpdatedAt: user.UpdatedAt,
 		LoginAt:   user.LoginAt,
 	}
+}
+
+func ConvertToUsersResponse(users []*entity.User) *UsersResponse {
+	res := &UsersResponse{}
+	for _, user := range users {
+		res.Users = append(res.Users, ConvertToUserResponse(user))
+	}
+	return res
 }

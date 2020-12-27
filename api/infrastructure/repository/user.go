@@ -160,3 +160,53 @@ func (repo *userRepository) DeleteByID(id string) error {
 	}
 	return nil
 }
+
+func (repo *userRepository) FindFollows(id string) ([]*entity.User, error) {
+	rows, err := repo.sqlHandler.Query(`
+		SELECT u.id, u.user_id, u.name, u.mail, u.image, u.profile, u.created_at, u.updated_at, u.login_at
+		FROM users_followers as f
+		INNER JOIN users as u
+		ON u.id = f.followed_user_id
+		WHERE f.user_id=?
+	`, id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get follows")
+	}
+	var users []*entity.User
+	for rows.Next() {
+		var user entity.User
+		if err = rows.Scan(&user.ID, &user.UserID, &user.Name, &user.Mail, &user.Image, &user.Profile, &user.CreatedAt, &user.UpdatedAt, &user.LoginAt); err != nil {
+			if rows.CheckNoRows(err) {
+				return nil, nil
+			}
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+	return users, nil
+}
+
+func (repo *userRepository) FindFollowers(id string) ([]*entity.User, error) {
+	rows, err := repo.sqlHandler.Query(`
+		SELECT u.id, u.user_id, u.name, u.mail, u.image, u.profile, u.created_at, u.updated_at, u.login_at
+		FROM users_followers as f
+		INNER JOIN users as u
+		ON u.id = f.followed_user_id
+		WHERE f.followed_user_id=?
+	`, id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get follows")
+	}
+	var users []*entity.User
+	for rows.Next() {
+		var user entity.User
+		if err = rows.Scan(&user.ID, &user.UserID, &user.Name, &user.Mail, &user.Image, &user.Profile, &user.CreatedAt, &user.UpdatedAt, &user.LoginAt); err != nil {
+			if rows.CheckNoRows(err) {
+				return nil, nil
+			}
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+	return users, nil
+}

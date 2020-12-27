@@ -50,6 +50,8 @@ func (s *server) Route(appHandler *handler.AppHandler) {
 	s.Handler.HandleFunc("/account", appHandler.UserHandler.Create).Methods("POST")
 	s.Handler.HandleFunc("/users", appHandler.UserHandler.GetAll).Methods("GET")
 	s.Handler.HandleFunc("/users/{id}", appHandler.UserHandler.GetByID).Methods("GET")
+	s.Handler.HandleFunc("/users/{id}/follows", appHandler.UserHandler.GetFollows).Methods("GET")
+	s.Handler.HandleFunc("/users/{id}/followers", appHandler.UserHandler.GetFollowers).Methods("GET")
 
 	{
 		authRouter.HandleFunc("/logout", appHandler.AuthHandler.Logout).Methods("DELETE")

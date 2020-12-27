@@ -15,17 +15,16 @@ type userService struct {
 
 type UserService interface {
 	New(userID, name, mail, image, profile, password string, isAdmin int) (*entity.User, error)
-
 	UpdateProfile(user *entity.User, name, mail, image, profile string) (*entity.User, error)
 	UpdateUserID(user *entity.User, userID string) (*entity.User, error)
 	UpdatePassword(user *entity.User, password string) (*entity.User, error)
-
 	GetByID(id string) (*entity.User, error)
 	GetByUserID(userID string) (*entity.User, error)
 	GetByMail(mail string) (*entity.User, error)
 	GetAll() ([]*entity.User, error)
-
 	Delete(id string) error
+	GetFollows(id string) ([]*entity.User, error)
+	GetFollowers(id string) ([]*entity.User, error)
 }
 
 func NewUserService(ur repository.UserRepository) UserService {
@@ -137,4 +136,20 @@ func (us *userService) Delete(id string) error {
 		return errors.Wrap(err, "failed to delete")
 	}
 	return nil
+}
+
+func (us *userService) GetFollows(id string) ([]*entity.User, error) {
+	users, err := us.userRepository.FindFollows(id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get follows")
+	}
+	return users, nil
+}
+
+func (us *userService) GetFollowers(id string) ([]*entity.User, error) {
+	users, err := us.userRepository.FindFollowers(id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get followers")
+	}
+	return users, nil
 }
