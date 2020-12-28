@@ -4,6 +4,8 @@ import (
 	"app/api/llog"
 	"encoding/json"
 	"net/http"
+
+	"github.com/pkg/errors"
 )
 
 func Success(w http.ResponseWriter, v interface{}) {
@@ -26,8 +28,17 @@ func Unauthorized(w http.ResponseWriter, err error, message string) {
 	httpError(w, http.StatusUnauthorized, err, message)
 }
 
+func NotFound(w http.ResponseWriter, err error, message string) {
+	httpError(w, http.StatusNotFound, err, message)
+}
+
 func InternalServerError(w http.ResponseWriter, err error, message string) {
 	httpError(w, http.StatusInternalServerError, err, message)
+}
+
+func NotImplemented(w http.ResponseWriter) {
+	err := errors.New("not implemented")
+	httpError(w, http.StatusNotImplemented, err, err.Error())
 }
 
 func httpError(w http.ResponseWriter, statusCode int, err error, message string) {

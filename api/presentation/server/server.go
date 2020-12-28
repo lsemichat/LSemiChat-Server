@@ -57,6 +57,9 @@ func (s *server) Route(appHandler *handler.AppHandler) {
 	s.Handler.HandleFunc("/categories", appHandler.CategoryHandler.GetAll).Methods("GET")
 	s.Handler.HandleFunc("/tags", appHandler.TagHandler.GetAll).Methods("GET")
 	s.Handler.HandleFunc("/tags/{id}", appHandler.TagHandler.GetByID).Methods("GET")
+	s.Handler.HandleFunc("/threads", appHandler.ThreadHandler.GetAll).Methods("GET")
+	s.Handler.HandleFunc("/threads/{id}", appHandler.ThreadHandler.GetByID).Methods("GET")
+	s.Handler.HandleFunc("/threads/{id}/members", appHandler.ThreadHandler.GetMembersByThreadID).Methods("GET")
 
 	{
 		authRouter.HandleFunc("/logout", appHandler.AuthHandler.Logout).Methods("DELETE")
@@ -68,6 +71,12 @@ func (s *server) Route(appHandler *handler.AppHandler) {
 		authRouter.HandleFunc("/users/{followedUUID}/follows", appHandler.UserHandler.Follow).Methods("POST")
 		authRouter.HandleFunc("/users/{followedUUID}/follows", appHandler.UserHandler.Unfollow).Methods("DELETE")
 		authRouter.HandleFunc("/tags", appHandler.TagHandler.Create).Methods("POST")
+		authRouter.HandleFunc("/threads", appHandler.ThreadHandler.Create).Methods("POST")
+		authRouter.HandleFunc("/threads/{id}", appHandler.ThreadHandler.Update).Methods("PUT")
+		authRouter.HandleFunc("/threads/{id}", appHandler.ThreadHandler.Delete).Methods("DELETE")
+		authRouter.HandleFunc("/threads/{id}/members", appHandler.ThreadHandler.Join).Methods("POST")
+		authRouter.HandleFunc("/threads/{id}/members", appHandler.ThreadHandler.Leave).Methods("DELETE")
+		authRouter.HandleFunc("/threads/{id}/members/{userID}", appHandler.ThreadHandler.ForceToLeave).Methods("DELETE")
 
 		// TODO: impl
 		// authRouter.HandleFunc("/account/tags").Methods("POST")
