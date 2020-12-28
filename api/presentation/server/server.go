@@ -55,18 +55,19 @@ func (s *server) Route(appHandler *handler.AppHandler) {
 	s.Handler.HandleFunc("/users/{id}/follows", appHandler.UserHandler.GetFollows).Methods("GET")
 	s.Handler.HandleFunc("/users/{id}/followers", appHandler.UserHandler.GetFollowers).Methods("GET")
 	s.Handler.HandleFunc("/categories", appHandler.CategoryHandler.GetAll).Methods("GET")
+	s.Handler.HandleFunc("/tags", appHandler.TagHandler.GetAll).Methods("GET")
+	s.Handler.HandleFunc("/tags/{id}", appHandler.TagHandler.GetByID).Methods("GET")
 
 	{
 		authRouter.HandleFunc("/logout", appHandler.AuthHandler.Logout).Methods("DELETE")
-		// account
 		authRouter.HandleFunc("/account", appHandler.UserHandler.GetMe).Methods("GET")
 		authRouter.HandleFunc("/account/profile", appHandler.UserHandler.UpdateProfile).Methods("PUT")
 		authRouter.HandleFunc("/account/user-id", appHandler.UserHandler.UpdateUserID).Methods("PUT")
 		authRouter.HandleFunc("/account/password", appHandler.UserHandler.UpdatePassword).Methods("PUT")
 		authRouter.HandleFunc("/account", appHandler.UserHandler.DeleteMe).Methods("DELETE")
-
 		authRouter.HandleFunc("/users/{followedUUID}/follows", appHandler.UserHandler.Follow).Methods("POST")
 		authRouter.HandleFunc("/users/{followedUUID}/follows", appHandler.UserHandler.Unfollow).Methods("DELETE")
+		authRouter.HandleFunc("/tags", appHandler.TagHandler.Create).Methods("POST")
 
 		// TODO: impl
 		// authRouter.HandleFunc("/account/tags").Methods("POST")

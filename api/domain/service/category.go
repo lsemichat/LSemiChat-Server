@@ -1,14 +1,14 @@
 package service
 
 import (
-	"app/api/application/repository"
 	"app/api/domain/entity"
+	"app/api/domain/repository"
 
 	"github.com/pkg/errors"
 )
 
 type CategoryService interface {
-	Create(category string) (*entity.Category, error)
+	New(category string) (*entity.Category, error)
 	GetAll() ([]*entity.Category, error)
 	GetByID(id string) (*entity.Category, error)
 	Update(category *entity.Category, newCategory string) (*entity.Category, error)
@@ -25,7 +25,7 @@ func NewCategoryService(cr repository.CategoryRepository) CategoryService {
 	}
 }
 
-func (cs *categoryService) Create(category string) (*entity.Category, error) {
+func (cs *categoryService) New(category string) (*entity.Category, error) {
 	uuid, err := GenerateUUID()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to generate id")

@@ -1,7 +1,7 @@
 package entity
 
 type Tag struct {
-	ID string
-	Tag string
+	ID       string
+	Tag      string
 	Category *Category
 }

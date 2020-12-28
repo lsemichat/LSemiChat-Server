@@ -1,8 +1,8 @@
 package service
 
 import (
-	"app/api/application/repository"
 	"app/api/domain/entity"
+	"app/api/domain/repository"
 	"time"
 
 	"github.com/google/uuid"

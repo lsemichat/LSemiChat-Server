@@ -26,7 +26,7 @@ func NewCategoryInteractor(cs service.CategoryService) CategoryInteractor {
 }
 
 func (ci *categoryInteractor) Create(category string) (*entity.Category, error) {
-	data, err := ci.categoryService.Create(category)
+	data, err := ci.categoryService.New(category)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create")
 	}
