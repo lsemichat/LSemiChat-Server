@@ -57,7 +57,6 @@ func (ti *threadInteractor) GetAll() ([]*entity.Thread, error) {
 	result := make([]*entity.Thread, 0, len(threads))
 	for _, thread := range threads {
 		author, _ := ti.userService.GetByID(thread.Author.ID)
-		// TODO: authorがunknowだったとき
 		thread.Author = author
 		result = append(result, thread)
 	}
@@ -86,7 +85,6 @@ func (ti *threadInteractor) GetOnlyPublic() ([]*entity.Thread, error) {
 	result := make([]*entity.Thread, 0, len(threads))
 	for _, thread := range threads {
 		author, _ := ti.userService.GetByID(thread.Author.ID)
-		// TODO: authorがunknowだったとき
 		thread.Author = author
 		result = append(result, thread)
 	}

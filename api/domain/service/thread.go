@@ -110,7 +110,6 @@ func (ts *threadService) AddMember(threadID, userID string, isAdmin int) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to generate uuid")
 	}
-	// TODO: めっちゃハードコーディングしておる
 	if err = ts.threadRepository.AddMember(id, threadID, userID, isAdmin); err != nil {
 		return errors.Wrap(err, "failed to add member")
 	}

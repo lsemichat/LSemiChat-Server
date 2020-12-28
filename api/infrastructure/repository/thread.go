@@ -102,7 +102,6 @@ func (tr *threadRepository) FindOnlyPublic() ([]*entity.Thread, error) {
 	return threads, nil
 }
 
-// TODO: userに移動？
 func (tr *threadRepository) FindMembersByThreadID(id string) ([]*entity.User, error) {
 	rows, err := tr.sqlHandler.Query(`
 		SELECT u.id, u.user_id, u.name, u.image, u.profile, u.mail, u.login_at, u.created_at, u.updated_at

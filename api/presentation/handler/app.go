@@ -13,6 +13,7 @@ type AppHandler struct {
 	CategoryHandler CategoryHandler
 	TagHandler      TagHandler
 	ThreadHandler   ThreadHandler
+	MessageHandler  MessageHandler
 }
 
 func NewAppHandler(sqlHandler database.SQLHandler) *AppHandler {
@@ -21,6 +22,7 @@ func NewAppHandler(sqlHandler database.SQLHandler) *AppHandler {
 	categoryRepository := repository.NewCategoryRepository(sqlHandler)
 	tagRepository := repository.NewTagRepository(sqlHandler)
 	threadRepository := repository.NewThreadRepository(sqlHandler)
+	messageRepository := repository.NewMessageRepository(sqlHandler)
 
 	// service
 	userService := service.NewUserService(userRepository)
@@ -28,6 +30,7 @@ func NewAppHandler(sqlHandler database.SQLHandler) *AppHandler {
 	categoryService := service.NewCategoryService(categoryRepository)
 	tagService := service.NewTagService(tagRepository)
 	threadService := service.NewThreadService(threadRepository)
+	messageService := service.NewMessageService(messageRepository)
 
 	// interactor
 	userInteractor := interactor.NewUserInteractor(userService, authService)
@@ -35,6 +38,7 @@ func NewAppHandler(sqlHandler database.SQLHandler) *AppHandler {
 	categoryInteractor := interactor.NewCategoryInteractor(categoryService)
 	tagInteractor := interactor.NewTagInteractor(tagService, categoryService)
 	threadInteractor := interactor.NewThreadInteractor(threadService, userService)
+	messageInteractor := interactor.NewMessageInteractor(messageService, threadService, userService)
 
 	return &AppHandler{
 		AuthHandler:     NewAuthHandler(authInteractor),
@@ -42,5 +46,6 @@ func NewAppHandler(sqlHandler database.SQLHandler) *AppHandler {
 		CategoryHandler: NewCategoryHandler(categoryInteractor),
 		TagHandler:      NewTagHandler(tagInteractor, categoryInteractor),
 		ThreadHandler:   NewThreadHandler(threadInteractor),
+		MessageHandler:  NewMessageHandler(messageInteractor, threadInteractor),
 	}
 }

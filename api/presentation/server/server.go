@@ -77,6 +77,9 @@ func (s *server) Route(appHandler *handler.AppHandler) {
 		authRouter.HandleFunc("/threads/{id}/members", appHandler.ThreadHandler.Join).Methods("POST")
 		authRouter.HandleFunc("/threads/{id}/members", appHandler.ThreadHandler.Leave).Methods("DELETE")
 		authRouter.HandleFunc("/threads/{id}/members/{userID}", appHandler.ThreadHandler.ForceToLeave).Methods("DELETE")
+		authRouter.HandleFunc("/threads/{threadID}/messages", appHandler.MessageHandler.GetByThreadID).Methods("GET")
+		authRouter.HandleFunc("/threads/{threadID}/messages", appHandler.MessageHandler.Create).Methods("POST")
+		authRouter.HandleFunc("/threads/{threadID}/messages/{messageID}", appHandler.MessageHandler.AddFavorite).Methods("POST")
 
 		// TODO: impl
 		// authRouter.HandleFunc("/account/tags").Methods("POST")

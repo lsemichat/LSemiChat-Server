@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -17,7 +18,10 @@ func NewAuthService() AuthService {
 }
 
 func (ah *authService) PasswordEncrypt(password string) (string, error) {
-	// TODO: 文字数のバリデーション
+	if len(password) > 70 {
+		// NOTE: 使っているパッケージの性質上、72文字以上のパスワードだと認証漏れするため
+		return "", errors.New("password is less 70 chatacters")
+	}
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
 		return "", err

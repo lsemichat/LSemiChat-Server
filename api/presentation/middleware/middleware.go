@@ -37,15 +37,3 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
-
-func MethodNotFoundHandler(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO: handlerで許可されているメソッド？
-		// allowedMethods :=
-		// llog.Debug(r.)
-		// TODO: rのメソッドを確認する
-		// method := r.Method
-
-		next.ServeHTTP(w, r)
-	})
-}

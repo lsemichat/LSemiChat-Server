@@ -16,7 +16,6 @@ func (r *CreateTagRequest) Validation(ci interactor.CategoryInteractor) error {
 		return errors.New("required field is empty")
 	}
 
-	// TODO: GetByCategoryID
 	_, err := ci.GetByID(r.CategoryID)
 	if err != nil {
 		return errors.New("can't find category")
