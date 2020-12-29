@@ -79,10 +79,10 @@ func (s *server) Route(appHandler *handler.AppHandler) {
 		authRouter.HandleFunc("/threads/{threadID}/messages/{messageID}", appHandler.MessageHandler.AddFavorite).Methods("POST")
 
 		// TODO: impl
-		// authRouter.HandleFunc("/account/tags").Methods("POST")
-		// authRouter.HandleFunc("/account/tags/{tagID}").Methods("DELETE")
-		// authRouter.HandleFunc("/threads/{threadID}/tags").Methods("POST")
-		// authRouter.HandleFunc("/threads/{threadID}/tags/{tagID}").Methods("DELETE")
+		authRouter.HandleFunc("/account/tags", appHandler.TagHandler.AddTagToUser).Methods("POST")
+		authRouter.HandleFunc("/account/tags/{tagID}", appHandler.TagHandler.RemoveTagFromUser).Methods("DELETE")
+		authRouter.HandleFunc("/threads/{threadID}/tags", appHandler.TagHandler.AddTagToThread).Methods("POST")
+		authRouter.HandleFunc("/threads/{threadID}/tags/{tagID}", appHandler.TagHandler.RemoveTagFromThread).Methods("DELETE")
 
 	}
 

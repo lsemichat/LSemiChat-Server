@@ -2,6 +2,7 @@ package handler
 
 import (
 	"app/api/application/interactor"
+	"app/api/infrastructure/lcontext"
 	"app/api/presentation/request"
 	"app/api/presentation/response"
 	"net/http"
@@ -13,6 +14,10 @@ type TagHandler interface {
 	Create(w http.ResponseWriter, r *http.Request)
 	GetAll(w http.ResponseWriter, r *http.Request)
 	GetByID(w http.ResponseWriter, r *http.Request)
+	AddTagToUser(w http.ResponseWriter, r *http.Request)
+	RemoveTagFromUser(w http.ResponseWriter, r *http.Request)
+	AddTagToThread(w http.ResponseWriter, r *http.Request)
+	RemoveTagFromThread(w http.ResponseWriter, r *http.Request)
 }
 
 type tagHandler struct {
@@ -70,4 +75,93 @@ func (th *tagHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	response.Success(w, response.ConvertToTagResponse(tag))
+}
+
+func (th *tagHandler) AddTagToUser(w http.ResponseWriter, r *http.Request) {
+	userID, err := lcontext.GetUserIDFromContext(r.Context())
+	if err != nil {
+		response.Unauthorized(w, errors.Wrap(err, "failed to authentication"), "failed to authentication. please login")
+		return
+	}
+
+	src, err := ReadRequestBody(r, &request.CreateTagRequest{})
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "failed to read request"), "failed to read request")
+		return
+	}
+	req, _ := src.(*request.CreateTagRequest)
+	err = req.Validation(th.categoryInteractor)
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "failed to validation"), err.Error())
+		return
+	}
+
+	if err = th.tagInteractor.AddToUser(req.Tag, req.CategoryID, userID); err != nil {
+		response.InternalServerError(w, errors.Wrap(err, "failed to add tag to user"), "failed to add tag to user")
+		return
+	}
+
+	response.NoContent(w)
+}
+
+func (th *tagHandler) RemoveTagFromUser(w http.ResponseWriter, r *http.Request) {
+	tagID, err := ReadPathParam(r, "tagID")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
+	userID, err := lcontext.GetUserIDFromContext(r.Context())
+	if err != nil {
+		response.Unauthorized(w, errors.Wrap(err, "failed to authentication"), "failed to authentication. please login")
+		return
+	}
+	if err := th.tagInteractor.RemoveFromUser(tagID, userID); err != nil {
+		response.InternalServerError(w, errors.Wrap(err, "failed to remove tag from user"), "failed to remove tag from user")
+		return
+	}
+	response.NoContent(w)
+}
+
+func (th *tagHandler) AddTagToThread(w http.ResponseWriter, r *http.Request) {
+	threadID, err := ReadPathParam(r, "threadID")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
+	src, err := ReadRequestBody(r, &request.CreateTagRequest{})
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "failed to read request"), "failed to read request")
+		return
+	}
+	req, _ := src.(*request.CreateTagRequest)
+	err = req.Validation(th.categoryInteractor)
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "failed to validation"), err.Error())
+		return
+	}
+
+	if err = th.tagInteractor.AddToThread(req.Tag, req.CategoryID, threadID); err != nil {
+		response.InternalServerError(w, errors.Wrap(err, "failed to add tag to thread"), "failed to add tag to thread")
+		return
+	}
+
+	response.NoContent(w)
+}
+
+func (th *tagHandler) RemoveTagFromThread(w http.ResponseWriter, r *http.Request) {
+	threadID, err := ReadPathParam(r, "threadID")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
+	tagID, err := ReadPathParam(r, "tagID")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
+	if err := th.tagInteractor.RemoveFromThread(tagID, threadID); err != nil {
+		response.InternalServerError(w, errors.Wrap(err, "failed to remove tag from user"), "failed to remove tag from user")
+		return
+	}
+	response.NoContent(w)
 }

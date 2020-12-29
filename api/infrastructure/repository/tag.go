@@ -150,3 +150,70 @@ func (tr *tagRepository) FindByThreadID(id string) ([]*entity.Tag, error) {
 	}
 	return tags, nil
 }
+
+func (tr *tagRepository) FindByTagAndCategoryID(tagValue, categoryID string) (*entity.Tag, error) {
+	row := tr.sqlHandler.QueryRow(`
+		SELECT id, tag, category_id
+		FROM tags
+		WHERE tag=? and category_id=?
+	`, tagValue, categoryID)
+	var tag entity.Tag
+	var category entity.Category
+	if err := row.Scan(&tag.ID, &tag.Tag, &category.ID); err != nil {
+		return nil, errors.Wrap(err, "failed to scan")
+	}
+	tag.Category = &category
+	return &tag, nil
+}
+
+func (tr *tagRepository) AddToUser(id, tagID, userUUID string) error {
+	_, err := tr.sqlHandler.Exec(`
+		INSERT INTO users_tags(id, tag_id, user_id)
+		VALUES (?, ?, ?)
+	`,
+		id,
+		tagID,
+		userUUID,
+	)
+	if err != nil {
+		return errors.Wrap(err, "failed to insert db")
+	}
+	return nil
+}
+
+func (tr *tagRepository) RemoveFromUser(tagID, userUUID string) error {
+	_, err := tr.sqlHandler.Exec(`
+		DELETE FROM users_tags
+		WHERE tag_id=? and user_id=?
+	`, tagID, userUUID)
+	if err != nil {
+		return errors.Wrap(err, "failed to delete reration")
+	}
+	return nil
+}
+
+func (tr *tagRepository) AddToThread(id, tagID, threadID string) error {
+	_, err := tr.sqlHandler.Exec(`
+		INSERT INTO threads_tags(id, tag_id, thread_id)
+		VALUES (?, ?, ?)
+	`,
+		id,
+		tagID,
+		threadID,
+	)
+	if err != nil {
+		return errors.Wrap(err, "failed to insert db")
+	}
+	return nil
+}
+
+func (tr *tagRepository) RemoveFromThread(tagID, threadID string) error {
+	_, err := tr.sqlHandler.Exec(`
+		DELETE FROM threads_tags
+		WHERE tag_id=? and thread_id=?
+	`, tagID, threadID)
+	if err != nil {
+		return errors.Wrap(err, "failed to delete reration")
+	}
+	return nil
+}

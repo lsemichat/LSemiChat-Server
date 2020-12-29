@@ -14,17 +14,25 @@ type TagInteractor interface {
 	GetByCategoryID(id string) ([]*entity.Tag, error)
 	GetByUserUUID(id string) ([]*entity.Tag, error)
 	GetByThreadID(id string) ([]*entity.Tag, error)
+	AddToUser(tagValue, categoryID, userID string) error
+	RemoveFromUser(tagID, userID string) error
+	AddToThread(tagValue, categoryID, threadID string) error
+	RemoveFromThread(tagID, threadID string) error
 }
 
 type tagInteractor struct {
 	tagService      service.TagService
 	categoryService service.CategoryService
+	userService     service.UserService
+	threadService   service.ThreadService
 }
 
-func NewTagInteractor(ts service.TagService, cs service.CategoryService) TagInteractor {
+func NewTagInteractor(ts service.TagService, cs service.CategoryService, us service.UserService, ths service.ThreadService) TagInteractor {
 	return &tagInteractor{
 		tagService:      ts,
 		categoryService: cs,
+		userService:     us,
+		threadService:   ths,
 	}
 }
 
@@ -113,4 +121,62 @@ func (ti *tagInteractor) GetByThreadID(id string) ([]*entity.Tag, error) {
 		result = append(result, tag)
 	}
 	return result, nil
+}
+
+func (ti *tagInteractor) AddToUser(tagValue, categoryID, userID string) error {
+	user, err := ti.userService.GetByUserID(userID)
+	if err != nil {
+		return errors.Wrap(err, "failed to find user")
+	}
+
+	tag, err := ti.tagService.GetByTagAndCategoryID(tagValue, categoryID)
+	if err != nil {
+		tag, err = ti.tagService.New(tagValue, categoryID)
+		if err != nil {
+			return errors.Wrap(err, "failed to create tag")
+		}
+	}
+
+	if err = ti.tagService.AddToUser(tag.ID, user.ID); err != nil {
+		return errors.Wrap(err, "failed to add tag to user")
+	}
+	return nil
+}
+
+func (ti *tagInteractor) RemoveFromUser(tagID, userID string) error {
+	user, err := ti.userService.GetByUserID(userID)
+	if err != nil {
+		return errors.Wrap(err, "failed to find user")
+	}
+	if err = ti.tagService.RemoveFromUser(tagID, user.ID); err != nil {
+		return errors.Wrap(err, "failed to remove tag from user")
+	}
+	return nil
+}
+
+func (ti *tagInteractor) AddToThread(tagValue, categoryID, threadID string) error {
+	_, err := ti.threadService.GetByID(threadID)
+	if err != nil {
+		return errors.Wrap(err, "failed to find thread")
+	}
+
+	tag, err := ti.tagService.GetByTagAndCategoryID(tagValue, categoryID)
+	if err != nil {
+		tag, err = ti.tagService.New(tagValue, categoryID)
+		if err != nil {
+			return errors.Wrap(err, "failed to create tag")
+		}
+	}
+
+	if err = ti.tagService.AddToThread(tag.ID, threadID); err != nil {
+		return errors.Wrap(err, "failed to add tag to user")
+	}
+	return nil
+}
+
+func (ti *tagInteractor) RemoveFromThread(tagID, threadID string) error {
+	if err := ti.tagService.RemoveFromThread(tagID, threadID); err != nil {
+		return errors.Wrap(err, "failed to remove tag from thread")
+	}
+	return nil
 }
