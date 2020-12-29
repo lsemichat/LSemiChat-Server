@@ -96,3 +96,57 @@ func (tr *tagRepository) FindByCategoryID(id string) ([]*entity.Tag, error) {
 	}
 	return tags, nil
 }
+
+func (tr *tagRepository) FindByUserUUID(id string) ([]*entity.Tag, error) {
+	rows, err := tr.sqlHandler.Query(`
+		SELECT t.id, t.tag, t.category_id
+		FROM users_tags as r
+		INNER JOIN tags as t
+		ON t.id = r.tag_id
+		WHERE user_id=?
+	`, id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select")
+	}
+	var tags []*entity.Tag
+	for rows.Next() {
+		var tag entity.Tag
+		var category entity.Category
+		if err = rows.Scan(&tag.ID, &tag.Tag, &category.ID); err != nil {
+			if rows.CheckNoRows(err) {
+				return nil, nil
+			}
+			return nil, errors.Wrap(err, "failed to scan")
+		}
+		tag.Category = &category
+		tags = append(tags, &tag)
+	}
+	return tags, nil
+}
+
+func (tr *tagRepository) FindByThreadID(id string) ([]*entity.Tag, error) {
+	rows, err := tr.sqlHandler.Query(`
+		SELECT t.id, t.tag, t.category_id
+		FROM threads_tags as r
+		INNER JOIN tags as t
+		ON t.id = r.tag_id
+		WHERE thread_id=?
+	`, id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select")
+	}
+	var tags []*entity.Tag
+	for rows.Next() {
+		var tag entity.Tag
+		var category entity.Category
+		if err = rows.Scan(&tag.ID, &tag.Tag, &category.ID); err != nil {
+			if rows.CheckNoRows(err) {
+				return nil, nil
+			}
+			return nil, errors.Wrap(err, "failed to scan")
+		}
+		tag.Category = &category
+		tags = append(tags, &tag)
+	}
+	return tags, nil
+}

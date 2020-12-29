@@ -12,6 +12,8 @@ type TagInteractor interface {
 	GetAll() ([]*entity.Tag, error)
 	GetByID(id string) (*entity.Tag, error)
 	GetByCategoryID(id string) ([]*entity.Tag, error)
+	GetByUserUUID(id string) ([]*entity.Tag, error)
+	GetByThreadID(id string) ([]*entity.Tag, error)
 }
 
 type tagInteractor struct {
@@ -70,6 +72,36 @@ func (ti *tagInteractor) GetByID(id string) (*entity.Tag, error) {
 
 func (ti *tagInteractor) GetByCategoryID(id string) ([]*entity.Tag, error) {
 	tags, err := ti.tagService.GetByCategoryID(id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get tags")
+	}
+	result := make([]*entity.Tag, 0, len(tags))
+	for _, tag := range tags {
+		// OPTIMIZE: 確実に遅いw
+		category, _ := ti.categoryService.GetByID(tag.Category.ID)
+		tag.Category = category
+		result = append(result, tag)
+	}
+	return result, nil
+}
+
+func (ti *tagInteractor) GetByUserUUID(id string) ([]*entity.Tag, error) {
+	tags, err := ti.tagService.GetByUserUUID(id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get tags")
+	}
+	result := make([]*entity.Tag, 0, len(tags))
+	for _, tag := range tags {
+		// OPTIMIZE: 確実に遅いw
+		category, _ := ti.categoryService.GetByID(tag.Category.ID)
+		tag.Category = category
+		result = append(result, tag)
+	}
+	return result, nil
+}
+
+func (ti *tagInteractor) GetByThreadID(id string) ([]*entity.Tag, error) {
+	tags, err := ti.tagService.GetByThreadID(id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get tags")
 	}

@@ -81,6 +81,8 @@ func (s *server) Route(appHandler *handler.AppHandler) {
 		// TODO: impl
 		// authRouter.HandleFunc("/account/tags").Methods("POST")
 		// authRouter.HandleFunc("/account/tags/{tagID}").Methods("DELETE")
+		// authRouter.HandleFunc("/threads/{threadID}/tags").Methods("POST")
+		// authRouter.HandleFunc("/threads/{threadID}/tags/{tagID}").Methods("DELETE")
 
 	}
 

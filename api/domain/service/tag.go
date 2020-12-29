@@ -12,6 +12,8 @@ type TagService interface {
 	GetAll() ([]*entity.Tag, error)
 	GetByID(id string) (*entity.Tag, error)
 	GetByCategoryID(id string) ([]*entity.Tag, error)
+	GetByUserUUID(id string) ([]*entity.Tag, error)
+	GetByThreadID(id string) ([]*entity.Tag, error)
 }
 
 type tagService struct {
@@ -62,6 +64,22 @@ func (ts *tagService) GetByID(id string) (*entity.Tag, error) {
 
 func (ts *tagService) GetByCategoryID(id string) ([]*entity.Tag, error) {
 	tags, err := ts.tagRepository.FindByCategoryID(id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get")
+	}
+	return tags, nil
+}
+
+func (ts *tagService) GetByUserUUID(id string) ([]*entity.Tag, error) {
+	tags, err := ts.tagRepository.FindByUserUUID(id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get")
+	}
+	return tags, nil
+}
+
+func (ts *tagService) GetByThreadID(id string) ([]*entity.Tag, error) {
+	tags, err := ts.tagRepository.FindByThreadID(id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get")
 	}
