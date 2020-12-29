@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-type UserCreateRequest struct {
+type CreateUserRequest struct {
 	UserID   string `json:"user_id"`
 	Name     string `json:"name"`
 	Mail     string `json:"mail"`
@@ -15,7 +15,7 @@ type UserCreateRequest struct {
 	Password string `json:"password"`
 }
 
-func (r *UserCreateRequest) ValidateRequest(ui interactor.UserInteractor) error {
+func (r *CreateUserRequest) ValidateRequest(ui interactor.UserInteractor) error {
 
 	if r.UserID == "" || r.Name == "" || r.Mail == "" || r.Password == "" {
 		return errors.New("require field is empty")
@@ -32,14 +32,14 @@ func (r *UserCreateRequest) ValidateRequest(ui interactor.UserInteractor) error 
 	return nil
 }
 
-type UserUpdateProfileRequest struct {
+type UpdateProfileRequest struct {
 	Name    string `json:"name"`
 	Mail    string `json:"mail"`
 	Image   string `json:"image"`
 	Profile string `json:"profile"`
 }
 
-func (r *UserUpdateProfileRequest) Validate(ui interactor.UserInteractor, userID string) error {
+func (r *UpdateProfileRequest) Validate(ui interactor.UserInteractor, userID string) error {
 
 	if r.Name == "" || r.Mail == "" {
 		return errors.New("require field is empty")
@@ -54,11 +54,11 @@ func (r *UserUpdateProfileRequest) Validate(ui interactor.UserInteractor, userID
 	return nil
 }
 
-type UserUpdateUserIDRequest struct {
+type UpdateUserIDRequest struct {
 	UserID string `json:"user_id"`
 }
 
-func (r *UserUpdateUserIDRequest) Validate(ui interactor.UserInteractor, userID string) error {
+func (r *UpdateUserIDRequest) Validate(ui interactor.UserInteractor, userID string) error {
 	if r.UserID == "" {
 		return errors.New("required field is empty")
 	}
@@ -70,11 +70,11 @@ func (r *UserUpdateUserIDRequest) Validate(ui interactor.UserInteractor, userID 
 	return nil
 }
 
-type UserUpdatePasswordRequest struct {
+type UpdatePasswordRequest struct {
 	Password string `json:"password"`
 }
 
-func (r *UserUpdatePasswordRequest) Validate() error {
+func (r *UpdatePasswordRequest) Validate() error {
 	if r.Password == "" {
 		return errors.New("required field is empty")
 	}

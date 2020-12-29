@@ -37,12 +37,12 @@ func NewUserHandler(ui interactor.UserInteractor) UserHandler {
 }
 
 func (uh *userHandler) Create(w http.ResponseWriter, r *http.Request) {
-	src, err := ReadRequestBody(r, &request.UserCreateRequest{})
+	src, err := ReadRequestBody(r, &request.CreateUserRequest{})
 	if err != nil {
 		response.BadRequest(w, errors.Wrap(err, "failed to read request body"), "failed to read request")
 		return
 	}
-	req, _ := src.(*request.UserCreateRequest)
+	req, _ := src.(*request.CreateUserRequest)
 
 	err = req.ValidateRequest(uh.userInteractor)
 	if err != nil {
@@ -66,12 +66,12 @@ func (uh *userHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	src, err := ReadRequestBody(r, &request.UserUpdateProfileRequest{})
+	src, err := ReadRequestBody(r, &request.UpdateProfileRequest{})
 	if err != nil {
 		response.BadRequest(w, errors.Wrap(err, "failed to read request body"), "failed to read request")
 		return
 	}
-	req, _ := src.(*request.UserUpdateProfileRequest)
+	req, _ := src.(*request.UpdateProfileRequest)
 	if err = req.Validate(uh.userInteractor, userID); err != nil {
 		response.BadRequest(w, errors.Wrap(err, "failed to validation"), err.Error())
 		return
@@ -92,12 +92,12 @@ func (uh *userHandler) UpdateUserID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	src, err := ReadRequestBody(r, &request.UserUpdateUserIDRequest{})
+	src, err := ReadRequestBody(r, &request.UpdateUserIDRequest{})
 	if err != nil {
 		response.BadRequest(w, errors.Wrap(err, "failed to read request body"), "failed to read request")
 		return
 	}
-	req, _ := src.(*request.UserUpdateUserIDRequest)
+	req, _ := src.(*request.UpdateUserIDRequest)
 	if err = req.Validate(uh.userInteractor, userID); err != nil {
 		response.BadRequest(w, errors.Wrap(err, "failed to validation"), err.Error())
 		return
@@ -124,12 +124,12 @@ func (uh *userHandler) UpdatePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	src, err := ReadRequestBody(r, &request.UserUpdatePasswordRequest{})
+	src, err := ReadRequestBody(r, &request.UpdatePasswordRequest{})
 	if err != nil {
 		response.BadRequest(w, errors.Wrap(err, "failed to read request body"), "failed to read request")
 		return
 	}
-	req, _ := src.(*request.UserUpdatePasswordRequest)
+	req, _ := src.(*request.UpdatePasswordRequest)
 	if err = req.Validate(); err != nil {
 		response.BadRequest(w, errors.Wrap(err, "failed to validation"), err.Error())
 		return
@@ -158,15 +158,15 @@ func (uh *userHandler) GetMe(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh *userHandler) GetByID(w http.ResponseWriter, r *http.Request) {
-	id := ReadPathParam(r, "id")
-	if id == "" {
-		response.BadRequest(w, errors.New("query param: id is empty"), "query param: id is empty")
+	id, err := ReadPathParam(r, "id")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
 		return
 	}
 
 	user, err := uh.userInteractor.GetByID(id)
 	if err != nil {
-		response.BadRequest(w, errors.Wrap(err, "failed to get user"), "failed to get user")
+		response.InternalServerError(w, errors.Wrap(err, "failed to get user"), "failed to get user")
 		return
 	}
 	response.Success(w, response.ConvertToUserResponse(user))
@@ -175,7 +175,7 @@ func (uh *userHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 func (uh *userHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	users, err := uh.userInteractor.GetAll()
 	if err != nil {
-		response.BadRequest(w, err, "failed to get user")
+		response.InternalServerError(w, err, "failed to get user")
 		return
 	}
 	response.Success(w, users)
@@ -197,7 +197,11 @@ func (uh *userHandler) DeleteMe(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh *userHandler) GetFollows(w http.ResponseWriter, r *http.Request) {
-	id := ReadPathParam(r, "id")
+	id, err := ReadPathParam(r, "id")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 	users, err := uh.userInteractor.GetFollows(id)
 	if err != nil {
 		response.InternalServerError(w, errors.Wrap(err, "failed to get follows"), "failed to get follows")
@@ -207,7 +211,11 @@ func (uh *userHandler) GetFollows(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh *userHandler) Follow(w http.ResponseWriter, r *http.Request) {
-	followedUUID := ReadPathParam(r, "followedUUID")
+	followedUUID, err := ReadPathParam(r, "followedUUID")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 	userID, err := lcontext.GetUserIDFromContext(r.Context())
 	if err != nil {
 		response.Unauthorized(w, errors.Wrap(err, "failed to authentication"), "failed to authentication")
@@ -222,7 +230,11 @@ func (uh *userHandler) Follow(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh *userHandler) Unfollow(w http.ResponseWriter, r *http.Request) {
-	followedUUID := ReadPathParam(r, "followedUUID")
+	followedUUID, err := ReadPathParam(r, "followedUUID")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 	userID, err := lcontext.GetUserIDFromContext(r.Context())
 	if err != nil {
 		response.Unauthorized(w, errors.Wrap(err, "failed to authentication"), "failed to authentication")
@@ -237,7 +249,11 @@ func (uh *userHandler) Unfollow(w http.ResponseWriter, r *http.Request) {
 }
 
 func (uh *userHandler) GetFollowers(w http.ResponseWriter, r *http.Request) {
-	id := ReadPathParam(r, "id")
+	id, err := ReadPathParam(r, "id")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 	users, err := uh.userInteractor.GetFollowers(id)
 	if err != nil {
 		response.InternalServerError(w, errors.Wrap(err, "failed to get followers"), "failed to get followers")

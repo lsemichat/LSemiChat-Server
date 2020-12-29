@@ -49,7 +49,11 @@ func (ch *categoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ch *categoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
-	id := ReadPathParam(r, "id")
+	id, err := ReadPathParam(r, "id")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 	category, err := ch.categoryInteractor.GetByID(id)
 	if err != nil {
 		response.InternalServerError(w, errors.Wrap(err, "failed to get category"), "failed to get category")
@@ -68,7 +72,11 @@ func (ch *categoryHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ch *categoryHandler) Update(w http.ResponseWriter, r *http.Request) {
-	id := ReadPathParam(r, "id")
+	id, err := ReadPathParam(r, "id")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 	src, err := ReadRequestBody(r, &request.UpdateCategoryRequest{})
 	if err != nil {
 		response.BadRequest(w, errors.Wrap(err, "failed to read request"), "failed to read request")
@@ -90,8 +98,12 @@ func (ch *categoryHandler) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ch *categoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	id := ReadPathParam(r, "id")
-	err := ch.categoryInteractor.Delete(id)
+	id, err := ReadPathParam(r, "id")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
+	err = ch.categoryInteractor.Delete(id)
 	if err != nil {
 		response.InternalServerError(w, errors.Wrap(err, "failed to delete category"), "failed to delete category")
 		return

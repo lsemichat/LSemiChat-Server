@@ -23,9 +23,6 @@ type server struct {
 func New(addr string) Server {
 	r := mux.NewRouter()
 
-	// middleware
-	r.Use(middleware.MethodNotFoundHandler)
-
 	srv := &server{
 		Addr:    addr,
 		Handler: r,
@@ -46,7 +43,7 @@ func (s *server) Route(appHandler *handler.AppHandler) {
 	adminRouter := s.Handler.PathPrefix("/").Subrouter()
 	// TODO: middleware
 
-	s.Handler.HandleFunc("/ping", pingHandler)
+	s.Handler.HandleFunc("/ping", pingHandler).Methods("GET")
 
 	s.Handler.HandleFunc("/login", appHandler.AuthHandler.Login).Methods("POST")
 	s.Handler.HandleFunc("/account", appHandler.UserHandler.Create).Methods("POST")

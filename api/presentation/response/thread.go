@@ -14,6 +14,7 @@ type ThreadResponse struct {
 	CreatedAt   *time.Time    `json:"created_at"`
 	UpdatedAt   *time.Time    `json:"updated_at"`
 	Author      *UserResponse `json:"author"`
+	// TODO: tag
 	// Tags        *TagsResponse `json:"tags"`
 }
 

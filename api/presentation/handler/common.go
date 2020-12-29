@@ -22,7 +22,10 @@ func ReadRequestBody(r *http.Request, req interface{}) (interface{}, error) {
 	return req, nil
 }
 
-func ReadPathParam(r *http.Request, key string) string {
-	return mux.Vars(r)[key]
-
+func ReadPathParam(r *http.Request, key string) (string, error) {
+	param := mux.Vars(r)[key]
+	if param == "" {
+		return "", errors.New("path param is empty")
+	}
+	return mux.Vars(r)[key], nil
 }

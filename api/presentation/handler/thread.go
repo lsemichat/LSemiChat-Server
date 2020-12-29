@@ -71,7 +71,11 @@ func (th *threadHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func (th *threadHandler) GetByID(w http.ResponseWriter, r *http.Request) {
-	id := ReadPathParam(r, "id")
+	id, err := ReadPathParam(r, "id")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 	thread, err := th.threadInteractor.GetByID(id)
 	if err != nil {
 		response.InternalServerError(w, errors.Wrap(err, "failed to get thread"), "failed to get thread")
@@ -90,7 +94,11 @@ func (th *threadHandler) GetOnlyPublic(w http.ResponseWriter, r *http.Request) {
 }
 
 func (th *threadHandler) GetMembersByThreadID(w http.ResponseWriter, r *http.Request) {
-	id := ReadPathParam(r, "id")
+	id, err := ReadPathParam(r, "id")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 	members, err := th.threadInteractor.GetMembersByThreadID(id)
 	if err != nil {
 		response.InternalServerError(w, errors.Wrap(err, "failed to get members"), "failed to get members")
@@ -105,7 +113,11 @@ func (th *threadHandler) Update(w http.ResponseWriter, r *http.Request) {
 		response.Unauthorized(w, errors.Wrap(err, "failed to authentication"), "failed to authentication. please login")
 		return
 	}
-	id := ReadPathParam(r, "id")
+	id, err := ReadPathParam(r, "id")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 
 	src, err := ReadRequestBody(r, &request.UpdateThreadRequest{})
 	if err != nil {
@@ -128,7 +140,11 @@ func (th *threadHandler) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (th *threadHandler) Delete(w http.ResponseWriter, r *http.Request) {
-	id := ReadPathParam(r, "id")
+	id, err := ReadPathParam(r, "id")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 
 	if err := th.threadInteractor.Delete(id); err != nil {
 		response.InternalServerError(w, errors.Wrap(err, "failed to delete thread"), "failed to delete thread")
@@ -143,7 +159,11 @@ func (th *threadHandler) Join(w http.ResponseWriter, r *http.Request) {
 		response.Unauthorized(w, errors.Wrap(err, "failed to authentication"), "failed to authentication. please login")
 		return
 	}
-	threadID := ReadPathParam(r, "id")
+	threadID, err := ReadPathParam(r, "id")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 	_, err = th.threadInteractor.GetByID(threadID)
 	if err != nil {
 		response.NotFound(w, errors.Wrap(err, "failed to get thread"), "thread is not found")
@@ -163,7 +183,11 @@ func (th *threadHandler) Leave(w http.ResponseWriter, r *http.Request) {
 		response.Unauthorized(w, errors.Wrap(err, "failed to authentication"), "failed to authentication. please login")
 		return
 	}
-	threadID := ReadPathParam(r, "id")
+	threadID, err := ReadPathParam(r, "id")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 
 	if err = th.threadInteractor.RemoveMember(threadID, userID); err != nil {
 		response.InternalServerError(w, errors.Wrap(err, "failed to leave thread"), "failed to leave thread")

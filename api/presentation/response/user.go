@@ -16,6 +16,7 @@ type UserResponse struct {
 	CreatedAt *time.Time `json:"created_at"`
 	UpdatedAt *time.Time `json:"updated_at"`
 	LoginAt   *time.Time `json:"login_at"`
+	// TODO; tagの追加
 }
 
 type UsersResponse struct {

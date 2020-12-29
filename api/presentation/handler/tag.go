@@ -59,7 +59,11 @@ func (th *tagHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func (th *tagHandler) GetByID(w http.ResponseWriter, r *http.Request) {
-	id := ReadPathParam(r, "id")
+	id, err := ReadPathParam(r, "id")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 	tag, err := th.tagInteractor.GetByID(id)
 	if err != nil {
 		response.InternalServerError(w, errors.Wrap(err, "failed to get tag"), "failed to get tag")

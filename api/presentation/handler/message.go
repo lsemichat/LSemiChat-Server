@@ -30,7 +30,11 @@ func NewMessageHandler(mi interactor.MessageInteractor, ti interactor.ThreadInte
 }
 
 func (mh *messageHandler) Create(w http.ResponseWriter, r *http.Request) {
-	threadID := ReadPathParam(r, "threadID")
+	threadID, err := ReadPathParam(r, "threadID")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 	userID, err := lcontext.GetUserIDFromContext(r.Context())
 	if err != nil {
 		response.Unauthorized(w, errors.Wrap(err, "failed to authentication"), "failed to authentication. please login")
@@ -59,7 +63,11 @@ func (mh *messageHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (mh *messageHandler) GetByThreadID(w http.ResponseWriter, r *http.Request) {
-	threadID := ReadPathParam(r, "threadID")
+	threadID, err := ReadPathParam(r, "threadID")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 	userID, err := lcontext.GetUserIDFromContext(r.Context())
 	if err != nil {
 		response.Unauthorized(w, errors.Wrap(err, "failed to authentication"), "failed to authentication. please login")
@@ -86,8 +94,16 @@ func (mh *messageHandler) GetByThreadID(w http.ResponseWriter, r *http.Request) 
 }
 
 func (mh *messageHandler) AddFavorite(w http.ResponseWriter, r *http.Request) {
-	threadID := ReadPathParam(r, "threadID")
-	messageID := ReadPathParam(r, "messageID")
+	threadID, err := ReadPathParam(r, "threadID")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
+	messageID, err := ReadPathParam(r, "messageID")
+	if err != nil {
+		response.BadRequest(w, errors.Wrap(err, "path parameter is empty"), "path parameter is empty")
+		return
+	}
 	userID, err := lcontext.GetUserIDFromContext(r.Context())
 	if err != nil {
 		response.Unauthorized(w, errors.Wrap(err, "failed to authentication"), "failed to authentication. please login")
