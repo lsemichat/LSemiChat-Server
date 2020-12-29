@@ -6,17 +6,17 @@ import (
 )
 
 type UserResponse struct {
-	ID        string     `json:"id"`
-	UserID    string     `json:"user_id"`
-	Name      string     `json:"name"`
-	Mail      string     `json:"mail"`
-	Image     string     `json:"image"`
-	Profile   string     `json:"profile"`
-	IsAdmin   int        `json:"is_admin"`
-	CreatedAt *time.Time `json:"created_at"`
-	UpdatedAt *time.Time `json:"updated_at"`
-	LoginAt   *time.Time `json:"login_at"`
-	// TODO; tagの追加
+	ID        string         `json:"id"`
+	UserID    string         `json:"user_id"`
+	Name      string         `json:"name"`
+	Mail      string         `json:"mail"`
+	Image     string         `json:"image"`
+	Profile   string         `json:"profile"`
+	IsAdmin   int            `json:"is_admin"`
+	CreatedAt *time.Time     `json:"created_at"`
+	UpdatedAt *time.Time     `json:"updated_at"`
+	LoginAt   *time.Time     `json:"login_at"`
+	Tags      []*TagResponse `json:"tags"`
 }
 
 type UsersResponse struct {
@@ -35,6 +35,7 @@ func ConvertToUserResponse(user *entity.User) *UserResponse {
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 		LoginAt:   user.LoginAt,
+		Tags:      ConvertToTagsResponse(user.Tags).Tags,
 	}
 }
 

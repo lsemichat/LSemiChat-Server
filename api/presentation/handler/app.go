@@ -33,11 +33,11 @@ func NewAppHandler(sqlHandler database.SQLHandler) *AppHandler {
 	messageService := service.NewMessageService(messageRepository)
 
 	// interactor
-	userInteractor := interactor.NewUserInteractor(userService, authService)
+	userInteractor := interactor.NewUserInteractor(userService, authService, tagService, categoryService)
 	authInteractor := interactor.NewAuthInteractor(authService, userService)
 	categoryInteractor := interactor.NewCategoryInteractor(categoryService)
 	tagInteractor := interactor.NewTagInteractor(tagService, categoryService, userService, threadService)
-	threadInteractor := interactor.NewThreadInteractor(threadService, userService)
+	threadInteractor := interactor.NewThreadInteractor(threadService, userService, tagService, categoryService)
 	messageInteractor := interactor.NewMessageInteractor(messageService, threadService, userService)
 
 	return &AppHandler{

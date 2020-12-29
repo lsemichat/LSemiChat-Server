@@ -11,4 +11,5 @@ type Thread struct {
 	IsPublic    int
 	CreatedAt   *time.Time
 	UpdatedAt   *time.Time
+	Tags        []*Tag
 }

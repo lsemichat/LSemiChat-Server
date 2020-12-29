@@ -21,14 +21,18 @@ type ThreadInteractor interface {
 }
 
 type threadInteractor struct {
-	threadService service.ThreadService
-	userService   service.UserService
+	threadService   service.ThreadService
+	userService     service.UserService
+	tagService      service.TagService
+	categoryService service.CategoryService
 }
 
-func NewThreadInteractor(ts service.ThreadService, us service.UserService) ThreadInteractor {
+func NewThreadInteractor(ts service.ThreadService, us service.UserService, tas service.TagService, cs service.CategoryService) ThreadInteractor {
 	return &threadInteractor{
-		threadService: ts,
-		userService:   us,
+		threadService:   ts,
+		userService:     us,
+		tagService:      tas,
+		categoryService: cs,
 	}
 }
 
@@ -58,6 +62,10 @@ func (ti *threadInteractor) GetAll() ([]*entity.Thread, error) {
 	for _, thread := range threads {
 		author, _ := ti.userService.GetByID(thread.Author.ID)
 		thread.Author = author
+		userTags, _ := ti.tagService.GetByUserUUID(author.ID)
+		thread.Author.Tags = AddCategoryToTag(userTags, ti.categoryService)
+		threadTags, _ := ti.tagService.GetByThreadID(thread.ID)
+		thread.Tags = AddCategoryToTag(threadTags, ti.categoryService)
 		result = append(result, thread)
 	}
 	return result, nil
@@ -73,6 +81,16 @@ func (ti *threadInteractor) GetByID(id string) (*entity.Thread, error) {
 		return nil, errors.Wrap(err, "failed to get author")
 	}
 	thread.Author = author
+	userTags, err := ti.tagService.GetByUserUUID(author.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get tags of user")
+	}
+	threadTags, err := ti.tagService.GetByThreadID(thread.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get tags of thread")
+	}
+	thread.Author.Tags = AddCategoryToTag(userTags, ti.categoryService)
+	thread.Tags = AddCategoryToTag(threadTags, ti.categoryService)
 	return thread, nil
 
 }
@@ -86,6 +104,11 @@ func (ti *threadInteractor) GetOnlyPublic() ([]*entity.Thread, error) {
 	for _, thread := range threads {
 		author, _ := ti.userService.GetByID(thread.Author.ID)
 		thread.Author = author
+		userTags, _ := ti.tagService.GetByUserUUID(author.ID)
+		thread.Author.Tags = AddCategoryToTag(userTags, ti.categoryService)
+		threadTags, _ := ti.tagService.GetByThreadID(thread.ID)
+		thread.Tags = AddCategoryToTag(threadTags, ti.categoryService)
+		result = append(result, thread)
 		result = append(result, thread)
 	}
 	return result, nil
@@ -96,7 +119,13 @@ func (ti *threadInteractor) GetMembersByThreadID(id string) ([]*entity.User, err
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get members")
 	}
-	return members, nil
+	result := make([]*entity.User, 0, len(members))
+	for _, member := range members {
+		tags, _ := ti.tagService.GetByUserUUID(member.ID)
+		member.Tags = AddCategoryToTag(tags, ti.categoryService)
+		result = append(result, member)
+	}
+	return result, nil
 }
 
 func (ti *threadInteractor) Update(id, name, description string, limitUsers, isPublic int) (*entity.Thread, error) {
@@ -113,6 +142,16 @@ func (ti *threadInteractor) Update(id, name, description string, limitUsers, isP
 		return nil, errors.Wrap(err, "failed to update thread")
 	}
 	thread.Author = author
+	userTags, err := ti.tagService.GetByUserUUID(author.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get tags of user")
+	}
+	threadTags, err := ti.tagService.GetByThreadID(thread.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get tags of thread")
+	}
+	thread.Author.Tags = AddCategoryToTag(userTags, ti.categoryService)
+	thread.Tags = AddCategoryToTag(threadTags, ti.categoryService)
 	return thread, nil
 }
 
@@ -136,7 +175,6 @@ func (ti *threadInteractor) AddMember(threadID, userID string) error {
 		return errors.Wrap(err, "failed to add member")
 	}
 	return nil
-
 }
 
 func (ti *threadInteractor) RemoveMember(threadID, userID string) error {

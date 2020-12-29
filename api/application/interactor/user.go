@@ -24,14 +24,18 @@ type UserInteractor interface {
 }
 
 type userInteractor struct {
-	userService service.UserService
-	authService service.AuthService
+	userService     service.UserService
+	authService     service.AuthService
+	tagService      service.TagService
+	categoryService service.CategoryService
 }
 
-func NewUserInteractor(us service.UserService, as service.AuthService) UserInteractor {
+func NewUserInteractor(us service.UserService, as service.AuthService, ts service.TagService, cs service.CategoryService) UserInteractor {
 	return &userInteractor{
-		userService: us,
-		authService: as,
+		userService:     us,
+		authService:     as,
+		tagService:      ts,
+		categoryService: cs,
 	}
 }
 
@@ -56,6 +60,11 @@ func (ui *userInteractor) UpdateProfile(userID, name, mail, image, profile strin
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to update profile")
 	}
+	tags, err := ui.tagService.GetByUserUUID(newUser.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get tags")
+	}
+	newUser.Tags = AddCategoryToTag(tags, ui.categoryService)
 	return newUser, nil
 }
 
@@ -68,6 +77,11 @@ func (ui *userInteractor) UpdateUserID(userID, newUserID string) (*entity.User, 
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to update userID")
 	}
+	tags, err := ui.tagService.GetByUserUUID(newUser.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get tags")
+	}
+	newUser.Tags = AddCategoryToTag(tags, ui.categoryService)
 	return newUser, nil
 }
 
@@ -84,6 +98,11 @@ func (ui *userInteractor) UpdatePassword(userID, password string) (*entity.User,
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to update password")
 	}
+	tags, err := ui.tagService.GetByUserUUID(newUser.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get tags")
+	}
+	newUser.Tags = AddCategoryToTag(tags, ui.categoryService)
 	return newUser, nil
 }
 
@@ -92,6 +111,11 @@ func (ui *userInteractor) GetByID(id string) (*entity.User, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get user")
 	}
+	tags, err := ui.tagService.GetByUserUUID(user.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get tags")
+	}
+	user.Tags = AddCategoryToTag(tags, ui.categoryService)
 	return user, nil
 }
 
@@ -100,6 +124,11 @@ func (ui *userInteractor) GetByUserID(userID string) (*entity.User, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get user")
 	}
+	tags, err := ui.tagService.GetByUserUUID(user.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get tags")
+	}
+	user.Tags = AddCategoryToTag(tags, ui.categoryService)
 	return user, nil
 }
 
@@ -108,6 +137,11 @@ func (ui *userInteractor) GetByMail(mail string) (*entity.User, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get user")
 	}
+	tags, err := ui.tagService.GetByUserUUID(user.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get tags")
+	}
+	user.Tags = AddCategoryToTag(tags, ui.categoryService)
 	return user, nil
 }
 
@@ -115,6 +149,12 @@ func (ui *userInteractor) GetAll() ([]*entity.User, error) {
 	users, err := ui.userService.GetAll()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get users")
+	}
+	result := make([]*entity.User, 0, len(users))
+	for _, user := range users {
+		tags, _ := ui.tagService.GetByUserUUID(user.ID)
+		user.Tags = AddCategoryToTag(tags, ui.categoryService)
+		result = append(result, user)
 	}
 	return users, nil
 }
@@ -135,6 +175,12 @@ func (ui *userInteractor) GetFollows(id string) ([]*entity.User, error) {
 	users, err := ui.userService.GetFollows(id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get follows")
+	}
+	result := make([]*entity.User, 0, len(users))
+	for _, user := range users {
+		tags, _ := ui.tagService.GetByUserUUID(user.ID)
+		user.Tags = AddCategoryToTag(tags, ui.categoryService)
+		result = append(result, user)
 	}
 	return users, nil
 }
@@ -167,6 +213,12 @@ func (ui *userInteractor) GetFollowers(id string) ([]*entity.User, error) {
 	users, err := ui.userService.GetFollowers(id)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get followers")
+	}
+	result := make([]*entity.User, 0, len(users))
+	for _, user := range users {
+		tags, _ := ui.tagService.GetByUserUUID(user.ID)
+		user.Tags = AddCategoryToTag(tags, ui.categoryService)
+		result = append(result, user)
 	}
 	return users, nil
 }

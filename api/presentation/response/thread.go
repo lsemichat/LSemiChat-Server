@@ -6,16 +6,15 @@ import (
 )
 
 type ThreadResponse struct {
-	ID          string        `json:"id"`
-	Name        string        `json:"name"`
-	Descirption string        `json:"description"`
-	LimitUsers  int           `json:"limit_users"`
-	IsPublic    int           `json:"is_public"`
-	CreatedAt   *time.Time    `json:"created_at"`
-	UpdatedAt   *time.Time    `json:"updated_at"`
-	Author      *UserResponse `json:"author"`
-	// TODO: tag
-	// Tags        *TagsResponse `json:"tags"`
+	ID          string         `json:"id"`
+	Name        string         `json:"name"`
+	Descirption string         `json:"description"`
+	LimitUsers  int            `json:"limit_users"`
+	IsPublic    int            `json:"is_public"`
+	CreatedAt   *time.Time     `json:"created_at"`
+	UpdatedAt   *time.Time     `json:"updated_at"`
+	Author      *UserResponse  `json:"author"`
+	Tags        []*TagResponse `json:"tags"`
 }
 
 type ThreadsResponse struct {
@@ -32,6 +31,7 @@ func ConvertToThreadResponse(thread *entity.Thread) *ThreadResponse {
 		CreatedAt:   thread.CreatedAt,
 		UpdatedAt:   thread.UpdatedAt,
 		Author:      ConvertToUserResponse(thread.Author),
+		Tags:        ConvertToTagsResponse(thread.Tags).Tags,
 	}
 }
 
