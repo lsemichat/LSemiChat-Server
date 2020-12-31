@@ -1,17 +1,7 @@
 # LSemiChat-Server
 
-現状やるべきTODO:
+やりたいこと
+- DBのモデルとentity分けれたら良さそう
+- ormapperみたいなのを自作する。ビルダー使えばできそう？
 
-- threads
-- messages
-- categories
-- tags
-
-ここが終わったら、push
-
-今後追加するかも知らんものとして、
-
-- archives
-- evaluations
-
-を考えよう
+limit_users: 0 = 無制限とか...

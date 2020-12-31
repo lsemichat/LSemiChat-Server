@@ -1,0 +1,1202 @@
+openapi: "3.0.0"
+# ref: https://swagger.io/specification/
+info:
+  title: "LSemiChat"
+  version: "1.1.0"
+servers:
+  - url: "https://localhost:8080"
+    description: "development server"
+
+tags:
+  - name: "utility"
+    description: "死活監視などのユーティリティ"
+  - name: "auth"
+    description: "認証関係"
+  - name: "account"
+    description: "ユーザ自身しか使えない機能"
+  - name: "user"
+    description: "ユーザ関連"
+  - name: "category"
+    description: "カテゴリ関連"
+  - name: "tag"
+    description: "タグ関連"
+  - name: "thread"
+    description: "スレッド関連"
+  - name: "message"
+    description: "メッセージ関連"
+  - name: "archive"
+    description: "アーカイブ関連"
+  - name: "evaluation"
+    description: "管理ユーザの機能"
+
+components:
+  schemas:
+    LoginRequest:
+      type: "object"
+      properties:
+        user_id:
+          type: "string"
+        password:
+          type: "string"
+    CreateUserRequest:
+      type: "object"
+      properties:
+        user_id:
+          type: "string"
+        name:
+          type: "string"
+        mail:
+          type: "string"
+        image:
+          type: "string"
+        profile:
+          type: "string"
+        password:
+          type: "string"
+    UpdateUserProfileRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        mail:
+          type: "string"
+        image:
+          type: "string"
+        profile:
+          type: "string"
+    UpdateUserIDRequest:
+      type: "object"
+      properties:
+        user_id:
+          type: "string"
+    UpdateUserPasswordRequest:
+      type: "object"
+      properties:
+        password:
+          type: "string"
+    UserResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        user_id:
+          type: "string"
+        name:
+          type: "string"
+        mail:
+          type: "string"
+        image:
+          type: "string"
+        profile:
+          type: "string"
+        is_admin:
+          type: "integer"
+        created_at:
+          type: "string"
+        updated_at:
+          type: "string"
+        login_at:
+          type: "string"
+        tags:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/TagResponse"
+    CreateCategoryRequest:
+      type: "object"
+      properties:
+        category:
+          type: "string"
+    UpdateCategoryRequest:
+      type: "object"
+      properties:
+        category:
+          type: "string"
+    CategoryResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        category:
+          type: "string"
+    CreateTagRequest:
+      type: "object"
+      properties:
+        tag:
+          type: "string"
+        category_id:
+          type: "string"
+    TagResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        tag:
+          type: "string"
+        category:
+          $ref: "#/components/schemas/CategoryResponse"
+    CreateThreadRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        description:
+          type: "string"
+        limit_users:
+          type: "integer"
+        is_public:
+          type: "integer"
+    UpdateThreadRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        description:
+          type: "string"
+        limit_users:
+          type: "integer"
+        is_public:
+          type: "integer"
+    ThreadResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        name:
+          type: "string"
+        description:
+          type: "string"
+        limit_users:
+          type: "integer"
+        is_public:
+          type: "integer"
+        created_at:
+          type: "string"
+        updated_at:
+          type: "string"
+        author:
+          $ref: "#/components/schemas/UserResponse"
+        tags:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/TagResponse"
+    CreateMessageRequest:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+        grade:
+          type: "integer"
+    MessageResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        message:
+          type: "string"
+        grade:
+          type: "integer"
+        created_at:
+          type: "string"
+        author:
+          $ref: "#/components/schemas/UserResponse"
+    CreateEvaluationRequest:
+      type: "object"
+      properties:
+        item:
+          type: "string"
+    UpdateEvaluationRequest:
+      type: "object"
+      properties:
+        item:
+          type: "string"
+    EvaluationResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        item:
+          type: "string"
+    ErrorResponse:
+      type: "object"
+      properties:
+        status:
+          type: "integer"
+        message:
+            type: "string"
+  responses:
+    UserResponse:
+      description: ユーザ情報のレスポンス
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserResponse"
+    UsersResponse:
+      description: "複数ユーザ情報のレスポンス"
+      content:
+        application/json:
+          schema:
+            type: "array"
+            items:
+              $ref: "#/components/schemas/UserResponse"
+    CategoryResonse:
+      description: "カテゴリ情報のレスポンス"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CategoryResponse"
+    CategoriesResonse:
+      description: "複数カテゴリのレスポンス"
+      content:
+        application/json:
+          schema:
+            type: "array"
+            items:
+              $ref:  "#/components/schemas/CategoryResponse"
+    TagRespoonse:
+      description: "タグ情報のレスポンス"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TagResponse"
+    TagsResponse:
+      description: "複数タグ情報のレスポンス"
+      content:
+        application/json:
+          schema:
+            type: "array"
+            items:
+              $ref: "#/components/schemas/TagResponse"
+    ThreadResponse:
+      description: "スレッド情報のレスポンス"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ThreadResponse"
+    ThreadsResponse:
+      description: "複数スレッド情報のレスポンス"
+      content:
+        application/json:
+          schema:
+            type: "array"
+            items:
+              $ref: "#/components/schemas/ThreadResponse"
+    MessageResponse:
+      description: "メッセージのレスポンス"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/MessageResponse"
+    MessagesResponse:
+      description: "複数メッセージ情報のレスポンス"
+      content:
+        application/json:
+          schema:
+            type: "array"
+            items:
+              $ref: "#/components/schemas/MessageResponse"
+    EvaluationResponse:
+      description: "評価のレスポンス"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EvaluationResponse"
+    EvaluationsResponse:
+      description: "評価一覧のレスポンス"
+      content:
+        application/json:
+          schema:
+            type: "array"
+            items:
+              $ref: "#/components/schemas/EvaluationResponse"
+    NoContent:
+      description: "正常終了。返すコンテンツがない場合に返却される"
+    BadRequest:
+      description: "不正なリクエスト。リクエストパラメータやボディが不正なときに返却される"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            status: 400
+            message: "error content"
+    Unauthorized:
+      description: "認証失敗。jwtが改ざんされていたり、未ログインだったときに返却される"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            status: 401
+            message: "error content"
+    NotFound:
+      description: "存在しないリソース。指定されたリソースが存在しない場合に返却される"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            status: 404
+            message: "error content"
+    InternalServerError:
+      description: "サーバエラー。サーバでエラーが起きたときに返却される"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            status: 500
+            message: "error content"
+    NotImplemented:
+      description: "未実装。未実装の場合に返却される"
+      content:
+        application/json:
+          schema:
+              $ref: "#/components/schemas/ErrorResponse"
+          example:
+            status: 501
+            message: "not implemented"
+      
+  parameters:
+    AccessToken:
+      name: "AccessToken"
+      in: "cookie"
+      required: true
+      description: "ログイン時に作成されるjwt"
+      schema:
+        type: "string"
+    UserUUID:
+      name: "userUUID"
+      in: "path"
+      required: true
+      description: "ユーザのUUID"
+      schema:
+        type: "string"
+    CategoryID:
+      name: "categoryID"
+      in: "path"
+      required: true
+      description: "カテゴリのID"
+      schema:
+        type: "string"
+    TagID:
+      name: "tagID"
+      in: "path"
+      required: true
+      description: "タグのID"
+      schema:
+        type: "string"
+    ThreadID:
+      name: "threadID"
+      in: "path"
+      required: true
+      description: "スレッドのID"
+      schema:
+        type: "string"
+    MessageID:
+      name: "messageID"
+      in: "path"
+      required: true
+      description: "メッセージのID"
+      schema:
+        type: "string"
+    EvaluationID:
+      name: "evaluationID"
+      in: "path"
+      required: true
+      description: "評価項目のID"
+      schema:
+        type: "string"
+
+paths:
+  # utility
+  /ping:
+    get:
+      tags:
+        - "utility"
+      summary: "死活監視用"
+      description: "死活監視のためのエンドポイント。実機能は備えません"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "string"
+                example:
+                  "pong"
+  # auth
+  /login:
+    post:
+      tags:
+        - "auth"
+      summary: "ログイン"
+      requestBody:
+        description: "認証情報"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: "認証成功"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  x-token:
+                    type: "string"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /logout:
+    delete:
+      tags:
+        - "auth"
+      summary: "ログアウト"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+  # account
+  /account:
+    get:
+      tags:
+        - "account"
+      summary: "アカウント情報"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+      responses:
+        "200":
+          $ref: "#/components/responses/UserResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - "account"
+      summary: "アカウント作成"
+      requestBody:
+        description: "アカウント情報"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/UserResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags:
+        - "account"
+      summary: "アカウント削除"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref:  "#/components/responses/InternalServerError"
+  /account/profile:
+    put:
+      tags:
+        - "account"
+      summary: "アカウントプロフィール更新"
+      parameters:
+        - $ref:  "#/components/parameters/AccessToken"
+      requestBody:
+        description: "プロフィール"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserProfileRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/UserResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref:  "#/components/responses/InternalServerError"
+  /account/user-id:
+    put:
+      tags:
+        - "account"
+      summary: "アカウントのユーザIDの更新"
+      parameters:
+        - $ref:  "#/components/parameters/AccessToken"
+      requestBody:
+        description: "新しいユーザ情報"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserIDRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/UserResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref:  "#/components/responses/InternalServerError"
+  /account/password:
+    put:
+      tags:
+        - "account"
+      summary: "アカウントのパスワードの更新"
+      parameters:
+        - $ref:  "#/components/parameters/AccessToken"
+      requestBody:
+        description: "新しいユーザ情報"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserPasswordRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/UserResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref:  "#/components/responses/InternalServerError"
+  /account/tags:
+    post:
+      tags:
+        - "account"
+      summary: "アカウントにタグを付加する"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+      requestBody:
+        description: "登録するタグの情報"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTagRequest"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /account/tags/{tagID}:
+    delete:
+      tags:
+        - "account"
+      summary: "アカウントからタグを削除"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/TagID"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  # user
+  /users:
+    get:
+      tags:
+        - "user"
+      summary: "全ユーザ取得"
+      responses:
+        "200":
+          $ref: "#/components/responses/UsersResponse"
+        "500":
+          $ref:  "#/components/responses/InternalServerError"
+  /users/{userUUID}:
+    get:
+      tags:
+        - "user"
+      summary: "指定したユーザ情報の取得"
+      parameters:
+        - $ref:  "#/components/parameters/UserUUID"
+      responses:
+        "200":
+          $ref: "#/components/responses/UserResponse"
+        "400":
+          $ref:  "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /users/{userUUID}/follows:
+    get:
+      tags:
+        - "user"
+      summary: "指定ユーザのフォローユーザ取得"
+      parameters:
+        - $ref:  "#/components/parameters/UserUUID"
+      responses:
+        "200":
+          $ref: "#/components/responses/UsersResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - "user"
+      summary: "指定ユーザをフォロー"
+      parameters:
+        - $ref:  "#/components/parameters/AccessToken"
+        - $ref:  "#/components/parameters/UserUUID"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags:
+        - "user"
+      summary: "指定ユーザのフォローを解除"
+      parameters:
+        - $ref:  "#/components/parameters/AccessToken"
+        - $ref:  "#/components/parameters/UserUUID"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /users/{userUUID}/followers:
+    get:
+      tags:
+        - "user"
+      summary: "指定ユーザのフォロワーを取得"
+      parameters:
+        - $ref: "#/components/parameters/UserUUID"
+      responses:
+        "200":
+          $ref: "#/components/responses/UsersResponse"
+        "500":
+          $ref: "#/components/responses/BadRequest"
+  /users/{userID}/evaluations/{evaluationID}:
+    post:
+      tags:
+        - "user"
+      summary: "ユーザに対して評価の投票"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/UserUUID"
+        - $ref: "#/components/parameters/EvaluationID"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags:
+        - "user"
+      summary: "ユーザに対して評価の取り消し"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/UserUUID"
+        - $ref: "#/components/parameters/EvaluationID"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  # category
+  /categories:
+    get:
+      tags:
+        - "category"
+      summary: "カテゴリの全権取得"
+      responses:
+        "200":
+          $ref: "#/components/responses/CategoriesResonse"
+        "500":
+          $ref:  "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - "category"
+      summary: "カテゴリの作成"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+      requestBody:
+        description: "新規カテゴリ"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCategoryRequest"
+      responses:
+        "200":
+          $ref:  "#/components/responses/CategoryResonse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref:  "#/components/responses/InternalServerError"
+  /categories/{categoryID}:
+    put:
+      tags:
+        - "category"
+      summary: "カテゴリの更新"
+      parameters:
+        - $ref:  "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/CategoryID"
+      requestBody:
+        description: "カテゴリの更新情報"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCategoryRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/CategoryResonse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags:
+        - "category"
+      summary: "カテゴリの削除"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/CategoryID"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  # tag
+  /tags:
+    get:
+      tags:
+        - "tag"
+      summary: "タグの全件取得"
+      responses:
+        "200":
+          $ref: "#/components/responses/TagsResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - "tag"
+      summary: "タグの作成"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+      requestBody:
+        description: "登録するタグの情報"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTagRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/TagRespoonse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /tags/{tagID}:
+    get:
+      tags:
+        - "tag"
+      summary: "タグの一件取得"
+      parameters:
+        - $ref: "#/components/parameters/TagID"
+      responses:
+        "200":
+          $ref: "#/components/responses/TagsResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  # thread
+  /threads:
+    get:
+      tags:
+        - "thread"
+      summary: "スレッドの全件取得"
+      responses:
+        "200":
+          $ref: "#/components/responses/ThreadsResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - "thread"
+      summary: "スレッドの作成"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+      requestBody:
+        description: "作成するスレッドの情報"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateThreadRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/ThreadResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /threads/{threadID}:
+    get:
+      tags:
+        - "thread"
+      summary: "指定したスレッドを取得"
+      parameters:
+        - $ref: "#/components/parameters/ThreadID"
+      responses:
+        "200":
+          $ref: "#/components/responses/ThreadResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    put:
+      tags:
+        - "thread"
+      summary: "スレッドの更新"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/ThreadID"
+      requestBody:
+        description: "更新するスレッドの情報"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateThreadRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/ThreadResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags:
+        - "thread"
+      summary: "スレッドの削除"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/ThreadID"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /threads/{threadID}/tags:
+    post:
+      tags:
+        - "thread"
+      summary: "スレッドにタグを付加する"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/ThreadID"
+      requestBody:
+        description: "付加するタグの情報"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTagRequest"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /threads/{threadID}/tags/{tagID}:
+    delete:
+      tags:
+        - "thread"
+      summary: "スレッドからタグを削除する"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/ThreadID"
+        - $ref: "#/components/parameters/TagID"
+      responses:
+        "204":
+          $ref: "#/components/responses/ThreadResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /threads/{threadID}/members:
+    get:
+      tags:
+        - "thread"
+      summary: "指定したスレッドに参加しているメンバーを取得"
+      parameters:
+        - $ref: "#/components/parameters/ThreadID"
+      responses:
+        "200":
+          $ref: "#/components/responses/UsersResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - "thread"
+      summary: "指定したスレッドに参加"
+      parameters:
+        - $ref: "#/components/parameters/ThreadID"
+        - $ref: "#/components/parameters/AccessToken"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags:
+        - "thread"
+      summary: "指定したスレッドから退出"
+      parameters:
+        - $ref: "#/components/parameters/ThreadID"
+        - $ref: "#/components/parameters/AccessToken"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /threads/{threadID}/members/{userUUID}:
+    delete:
+      tags:
+        - "thread"
+      summary: "スレッドから退出させる"
+      parameters:
+        - $ref: "#/components/parameters/ThreadID"
+        - $ref: "#/components/parameters/UserUUID"
+        - $ref: "#/components/parameters/AccessToken"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  # message
+  /threads/{threadID}/messages:
+    get:
+      tags:
+        - "message"
+      summary: "スレッドのメッセージを取得"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/ThreadID"
+      responses:
+        "200":
+          $ref: "#/components/responses/MessagesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - "message"
+      summary: "スレッドのメッセージを作成"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/ThreadID"
+      requestBody:
+        description: "メッセージの情報"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMessageRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/MessagesResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /threads/{threadID}/messages/{messageID}:
+    post:
+      tags:
+        - "message"
+      summary: "メッセージをお気に入りにする"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/ThreadID"
+        - $ref: "#/components/parameters/MessageID"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /threads/{threadID}/archives:
+    post:
+      tags:
+        - "archive"
+      summary: "指定のスレッドをアーカイブする"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/ThreadID"
+      responses:
+      # TODO: archiveの仕様をどうするか...別テーブルに分けなくていい気がするんだよなあ
+        "200":
+          $ref: "#/components/responses/ThreadResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags:
+        - "archive"
+      summary: "指定のスレッドをアーカイブを解除"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/ThreadID"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  # evaluation
+  /evaluations:
+    get:
+      tags:
+        - "evaluation"
+      summary: "評価一覧を取得"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+      responses:
+        "200":
+          $ref: "#/components/responses/EvaluationsResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    post:
+      tags:
+        - "evaluation"
+      summary: "評価項目の作成"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+      requestBody:
+        description: "評価の情報"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEvaluationRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/EvaluationsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+  /evaluations/{evaluationID}:
+    put:
+      tags:
+        - "evaluation"
+      summary: "評価項目の更新"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/EvaluationID"
+      requestBody:
+        description: "評価の情報"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEvaluationRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/EvaluationsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+    delete:
+      tags:
+        - "evaluation"
+      summary: "評価項目の削除"
+      parameters:
+        - $ref: "#/components/parameters/AccessToken"
+        - $ref: "#/components/parameters/EvaluationID"
+      responses:
+        "204":
+          $ref: "#/components/responses/NoContent"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
