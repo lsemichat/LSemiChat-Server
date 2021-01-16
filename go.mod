@@ -8,6 +8,5 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/mux v1.8.0
 	github.com/pkg/errors v0.9.1
-	github.com/yawn-yawn-yawn/sampleNoteApp/go v0.0.0-20200312090238-758cb2dec372
 	golang.org/x/crypto v0.0.0-20191219195013-becbf705a915
 )
