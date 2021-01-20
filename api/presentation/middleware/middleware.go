@@ -15,20 +15,27 @@ import (
 	"github.com/pkg/errors"
 )
 
-var mode *string
+// var mode *string
 var (
 	allowOrigin  = "*"
 	allowHeaders = "*"
 )
 
+type mode string
+
+const (
+	develop    mode = "develop"
+	production mode = "production"
+)
+
 func init() {
-	mode = flag.String("mode", "production", "run mode. value=[develop, production]")
+	modeFlag := flag.String("mode", "production", "run mode. value=[develop, production]")
 	flag.Parse()
-	if *mode == "develop" {
+	if *modeFlag == string(develop) {
 		allowOrigin = "http://localhost:3000"
 		allowHeaders = "Content-Type"
 	}
-	llog.Info(fmt.Sprintf("run mode is %s", *mode))
+	llog.Info(fmt.Sprintf("run mode is %s", *modeFlag))
 }
 
 func CommonMiddleware(next http.Handler) http.Handler {
