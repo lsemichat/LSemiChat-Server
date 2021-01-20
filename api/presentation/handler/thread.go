@@ -2,6 +2,7 @@ package handler
 
 import (
 	"app/api/application/interactor"
+	"app/api/constants"
 	"app/api/infrastructure/lcontext"
 	"app/api/presentation/request"
 	"app/api/presentation/response"
@@ -64,13 +65,18 @@ func (th *threadHandler) Create(w http.ResponseWriter, r *http.Request) {
 func (th *threadHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	targetParam, _ := ReadQueryParam(r, "target")
 	if len(targetParam) > 0 {
-		if targetParam[0] != "tag" && targetParam[0] != "user" && targetParam[0] != "thread" {
+		target := constants.SearchThreadTarget(targetParam[0])
+		if target != constants.TargetTag && target != constants.TargetUser && target != constants.TargetThreadName {
 			response.BadRequest(w, errors.Errorf("invalid query param: target is <%s>", targetParam[0]), "invalid query parameter. target=thread | user | tag")
 			return
 		}
 		// 検索
 		keywords, _ := ReadQueryParam(r, "key")
-		threads, err := th.threadInteractor.GetByKeywords(targetParam[0], keywords)
+		if len(keywords) == 0 {
+			response.Success(w, response.ThreadsResponse{})
+			return
+		}
+		threads, err := th.threadInteractor.GetByKeywords(target, keywords)
 		if err != nil {
 			response.InternalServerError(w, errors.Wrap(err, "failed to get threads"), "failed to get threads")
 			return

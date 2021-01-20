@@ -1,6 +1,7 @@
 package interactor
 
 import (
+	"app/api/constants"
 	"app/api/domain/entity"
 	"app/api/domain/service"
 
@@ -10,7 +11,7 @@ import (
 type ThreadInteractor interface {
 	Create(name, description string, limitUsers, isPublic int, authorID string) (*entity.Thread, error)
 	GetAll() ([]*entity.Thread, error)
-	GetByKeywords(target string, keywords []string) ([]*entity.Thread, error)
+	GetByKeywords(target constants.SearchThreadTarget, keywords []string) ([]*entity.Thread, error)
 	GetByID(id string) (*entity.Thread, error)
 	GetOnlyPublic() ([]*entity.Thread, error)
 	GetMembersByThreadID(id string) ([]*entity.User, error)
@@ -72,10 +73,10 @@ func (ti *threadInteractor) GetAll() ([]*entity.Thread, error) {
 	return result, nil
 }
 
-func (ti *threadInteractor) GetByKeywords(target string, keywords []string) ([]*entity.Thread, error) {
+func (ti *threadInteractor) GetByKeywords(target constants.SearchThreadTarget, keywords []string) ([]*entity.Thread, error) {
 	var keys []string
 	switch target {
-	case "user":
+	case constants.TargetUser:
 		users, err := ti.userService.GetByUserIDs(keywords)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to get users")
@@ -83,7 +84,7 @@ func (ti *threadInteractor) GetByKeywords(target string, keywords []string) ([]*
 		for _, user := range users {
 			keys = append(keys, user.ID)
 		}
-	case "tag":
+	case constants.TargetTag:
 		tags, err := ti.tagService.GetByTagNames(keywords)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to get tags")
@@ -91,7 +92,7 @@ func (ti *threadInteractor) GetByKeywords(target string, keywords []string) ([]*
 		for _, tag := range tags {
 			keys = append(keys, tag.ID)
 		}
-	case "thread":
+	case constants.TargetThreadName:
 		keys = keywords
 	}
 
