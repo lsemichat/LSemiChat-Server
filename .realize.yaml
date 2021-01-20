@@ -5,6 +5,8 @@ settings:
 schema:
 - name: api
   path: .
+  args:
+    - --mode=develop
   commands:
     install:
       status: true
