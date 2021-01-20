@@ -22,6 +22,7 @@ type UserService interface {
 	GetByUserID(userID string) (*entity.User, error)
 	GetByMail(mail string) (*entity.User, error)
 	GetAll() ([]*entity.User, error)
+	GetByUserIDs(userIDs []string) ([]*entity.User, error)
 	Delete(id string) error
 	GetFollows(id string) ([]*entity.User, error)
 	AddFollow(userID, followedUserID string) error
@@ -128,6 +129,14 @@ func (us *userService) GetAll() ([]*entity.User, error) {
 	users, err := us.userRepository.FindAll()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get users")
+	}
+	return users, nil
+}
+
+func (us *userService) GetByUserIDs(userIDs []string) ([]*entity.User, error) {
+	users, err := us.userRepository.FindByUserIDs(userIDs)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to find users by userIDs")
 	}
 	return users, nil
 }

@@ -406,6 +406,20 @@ components:
       description: "評価項目のID"
       schema:
         type: "string"
+    QueryTarget:
+      name: "target"
+      in: "query"
+      required: false
+      description: "検索対象を表す。user | tag | thread"
+      schema:
+        type: "string"
+    QueryKey:
+      name: "key"
+      in: "query"
+      required: false
+      description: "キーワード"
+      schema:
+        type: "string"
 
 paths:
   # utility
@@ -851,7 +865,11 @@ paths:
     get:
       tags:
         - "thread"
-      summary: "スレッドの全件取得"
+      summary: "スレッドの取得"
+      description: "クエリパラメータがなければ、スレッドを全て取得する。クエリパラメータを指定すると検索が可能。"
+      parameters:
+        - $ref: "#/components/parameters/QueryTarget"
+        - $ref: "#/components/parameters/QueryKey"
       responses:
         "200":
           $ref: "#/components/responses/ThreadsResponse"

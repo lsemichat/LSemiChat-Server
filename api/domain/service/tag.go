@@ -15,6 +15,7 @@ type TagService interface {
 	GetByUserUUID(id string) ([]*entity.Tag, error)
 	GetByThreadID(id string) ([]*entity.Tag, error)
 	GetByTagAndCategoryID(tagValue, categoryID string) (*entity.Tag, error)
+	GetByTagNames(tagNames []string) ([]*entity.Tag, error)
 	AddToUser(tagID, userUUID string) error
 	RemoveFromUser(tagID, userUUID string) error
 	AddToThread(tagID, threadID string) error
@@ -97,6 +98,14 @@ func (ts *tagService) GetByTagAndCategoryID(tagValue, categoryID string) (*entit
 		return nil, errors.Wrap(err, "failed to get tag")
 	}
 	return tag, nil
+}
+
+func (ts *tagService) GetByTagNames(tagNames []string) ([]*entity.Tag, error) {
+	tags, err := ts.tagRepository.FindByTagNames(tagNames)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to find by tag names")
+	}
+	return tags, nil
 }
 
 func (ts *tagService) AddToUser(tagID, userUUID string) error {

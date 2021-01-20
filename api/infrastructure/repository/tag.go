@@ -4,6 +4,7 @@ import (
 	"app/api/domain/entity"
 	"app/api/domain/repository"
 	"app/api/infrastructure/database"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -164,6 +165,35 @@ func (tr *tagRepository) FindByTagAndCategoryID(tagValue, categoryID string) (*e
 	}
 	tag.Category = &category
 	return &tag, nil
+}
+
+func (tr *tagRepository) FindByTagNames(tagNames []string) ([]*entity.Tag, error) {
+	query := `
+		SELECT id, tag, category_id
+		FROM tags
+		WHERE `
+	for _, tagName := range tagNames {
+		query += "tag LIKE '%" + tagName + "%' OR"
+	}
+	query = strings.TrimSuffix(query, "OR")
+	rows, err := tr.sqlHandler.Query(query)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select")
+	}
+	var tags []*entity.Tag
+	for rows.Next() {
+		var tag entity.Tag
+		var category entity.Category
+		if err = rows.Scan(&tag.ID, &tag.Tag, &category.ID); err != nil {
+			if rows.CheckNoRows(err) {
+				return nil, nil
+			}
+			return nil, errors.Wrap(err, "failed to scan")
+		}
+		tag.Category = &category
+		tags = append(tags, &tag)
+	}
+	return tags, nil
 }
 
 func (tr *tagRepository) AddToUser(id, tagID, userUUID string) error {
