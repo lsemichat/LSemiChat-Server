@@ -10,6 +10,7 @@ type TagRepository interface {
 	FindByUserUUID(id string) ([]*entity.Tag, error)
 	FindByThreadID(id string) ([]*entity.Tag, error)
 	FindByTagAndCategoryID(tagValue, categoryID string) (*entity.Tag, error)
+	FindByTagNames(tagNames []string) ([]*entity.Tag, error)
 	AddToUser(id, tagID, userUUID string) error
 	RemoveFromUser(tagID, userUUID string) error
 	AddToThread(id, tagID, threadID string) error

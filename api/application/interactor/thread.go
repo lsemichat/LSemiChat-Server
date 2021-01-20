@@ -10,6 +10,7 @@ import (
 type ThreadInteractor interface {
 	Create(name, description string, limitUsers, isPublic int, authorID string) (*entity.Thread, error)
 	GetAll() ([]*entity.Thread, error)
+	GetByKeywords(target string, keywords []string) ([]*entity.Thread, error)
 	GetByID(id string) (*entity.Thread, error)
 	GetOnlyPublic() ([]*entity.Thread, error)
 	GetMembersByThreadID(id string) ([]*entity.User, error)
@@ -57,6 +58,49 @@ func (ti *threadInteractor) GetAll() ([]*entity.Thread, error) {
 	threads, err := ti.threadService.GetAll()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get threads")
+	}
+	result := make([]*entity.Thread, 0, len(threads))
+	for _, thread := range threads {
+		author, _ := ti.userService.GetByID(thread.Author.ID)
+		thread.Author = author
+		userTags, _ := ti.tagService.GetByUserUUID(author.ID)
+		thread.Author.Tags = AddCategoryToTag(userTags, ti.categoryService)
+		threadTags, _ := ti.tagService.GetByThreadID(thread.ID)
+		thread.Tags = AddCategoryToTag(threadTags, ti.categoryService)
+		result = append(result, thread)
+	}
+	return result, nil
+}
+
+func (ti *threadInteractor) GetByKeywords(target string, keywords []string) ([]*entity.Thread, error) {
+	var keys []string
+	switch target {
+	case "user":
+		users, err := ti.userService.GetByUserIDs(keywords)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get users")
+		}
+		for _, user := range users {
+			keys = append(keys, user.ID)
+		}
+	case "tag":
+		tags, err := ti.tagService.GetByTagNames(keywords)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get tags")
+		}
+		for _, tag := range tags {
+			keys = append(keys, tag.ID)
+		}
+	case "thread":
+		keys = keywords
+	}
+
+	if len(keys) == 0 {
+		return nil, nil
+	}
+	threads, err := ti.threadService.GetByKeywords(target, keys)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get by keyword")
 	}
 	result := make([]*entity.Thread, 0, len(threads))
 	for _, thread := range threads {

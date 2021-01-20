@@ -42,6 +42,7 @@ func NotImplemented(w http.ResponseWriter) {
 }
 
 func httpError(w http.ResponseWriter, statusCode int, err error, message string) {
+	// TODO: logをmiddlewareで挿入したい
 	llog.Error(err.Error())
 	res := &httpErrorResponse{
 		StatusCode: statusCode,

@@ -8,6 +8,9 @@ type ThreadRepository interface {
 	FindByID(id string) (*entity.Thread, error)
 	FindOnlyPublic() ([]*entity.Thread, error)
 	FindMembersByThreadID(id string) ([]*entity.User, error)
+	FindByTags(tagIDs []string) ([]*entity.Thread, error)
+	FindByUserUUIDs(userUUIDs []string) ([]*entity.Thread, error)
+	FindByNames(names []string) ([]*entity.Thread, error)
 	Update(thread *entity.Thread) error
 	AddMember(id, threadID, userID string, isAdmin int) error
 	RemoveMember(threadID, userID string) error

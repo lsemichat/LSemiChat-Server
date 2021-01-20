@@ -4,6 +4,7 @@ import (
 	"app/api/domain/entity"
 	"app/api/domain/repository"
 	"app/api/infrastructure/database"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -169,6 +170,33 @@ func (repo *userRepository) FindFollows(id string) ([]*entity.User, error) {
 		ON u.id = f.followed_user_id
 		WHERE f.user_id=?
 	`, id)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get follows")
+	}
+	var users []*entity.User
+	for rows.Next() {
+		var user entity.User
+		if err = rows.Scan(&user.ID, &user.UserID, &user.Name, &user.Mail, &user.Image, &user.Profile, &user.CreatedAt, &user.UpdatedAt, &user.LoginAt); err != nil {
+			if rows.CheckNoRows(err) {
+				return nil, nil
+			}
+			return nil, err
+		}
+		users = append(users, &user)
+	}
+	return users, nil
+}
+
+func (repo *userRepository) FindByUserIDs(userIDs []string) ([]*entity.User, error) {
+	query := `
+		SELECT id, user_id, name, mail, image, profile, created_at, updated_at, login_at
+		FROM users
+		WHERE `
+	for _, userID := range userIDs {
+		query += `user_id LIKE '%` + userID + `%' OR`
+	}
+	query = strings.TrimSuffix(query, "OR")
+	rows, err := repo.sqlHandler.Query(query)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get follows")
 	}

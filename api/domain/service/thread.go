@@ -14,6 +14,7 @@ type ThreadService interface {
 	GetByID(id string) (*entity.Thread, error)
 	GetOnlyPublic() ([]*entity.Thread, error)
 	GetMembersByThreadID(id string) ([]*entity.User, error)
+	GetByKeywords(target string, keywords []string) ([]*entity.Thread, error)
 	Update(thread *entity.Thread, name, description string, limitUsers, isPublic int) (*entity.Thread, error)
 	Delete(id string) error
 	AddMember(threadID, userID string, isAdmin int) error
@@ -82,6 +83,29 @@ func (ts *threadService) GetMembersByThreadID(id string) ([]*entity.User, error)
 		return nil, errors.Wrap(err, "failed to get members")
 	}
 	return members, nil
+}
+
+func (ts *threadService) GetByKeywords(target string, keywords []string) ([]*entity.Thread, error) {
+	var threads []*entity.Thread
+	var err error
+	switch target {
+	case "thread":
+		threads, err = ts.threadRepository.FindByNames(keywords)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get by keyword(thread name)")
+		}
+	case "user":
+		threads, err = ts.threadRepository.FindByUserUUIDs(keywords)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get by keyword(userUUID)")
+		}
+	case "tag":
+		threads, err = ts.threadRepository.FindByTags(keywords)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get by keyword(tag)")
+		}
+	}
+	return threads, nil
 }
 
 func (ts *threadService) Update(thread *entity.Thread, name, description string, limitUsers, isPublic int) (*entity.Thread, error) {

@@ -29,7 +29,7 @@ const (
 )
 
 func init() {
-	modeFlag := flag.String("mode", "production", "run mode. value=[develop, production]")
+	modeFlag := flag.String("mode", string(production), "run mode. value=[develop, production]")
 	flag.Parse()
 	if *modeFlag == string(develop) {
 		allowOrigin = "http://localhost:3000"

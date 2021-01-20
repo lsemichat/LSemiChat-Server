@@ -4,6 +4,8 @@ import (
 	"app/api/domain/entity"
 	"app/api/domain/repository"
 	"app/api/infrastructure/database"
+	"fmt"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -43,6 +45,104 @@ func (tr *threadRepository) FindAll() ([]*entity.Thread, error) {
 		SELECT id, name, description, limit_users, user_id, is_public, created_at, updated_at
 		FROM threads
 	`)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select")
+	}
+	var threads []*entity.Thread
+	for rows.Next() {
+		var thread entity.Thread
+		var author entity.User
+		if err = rows.Scan(&thread.ID, &thread.Name, &thread.Description, &thread.LimitUsers, &author.ID, &thread.IsPublic, &thread.CreatedAt, &thread.UpdatedAt); err != nil {
+			if rows.CheckNoRows(err) {
+				return nil, nil
+			}
+			return nil, errors.Wrap(err, "failed to scan")
+		}
+		thread.Author = &author
+		threads = append(threads, &thread)
+	}
+	return threads, nil
+}
+
+func (tr *threadRepository) FindByTags(tagIDs []string) ([]*entity.Thread, error) {
+	values := ""
+	for _, tagID := range tagIDs {
+		values += fmt.Sprintf("'%s',", tagID)
+	}
+	values = strings.TrimSuffix(values, ",")
+	inQuery := fmt.Sprintf(`
+		SELECT thread_id
+		FROM threads_tags
+		WHERE tag_id IN (%s)
+		GROUP BY thread_id
+	`, values)
+	query := fmt.Sprintf(`
+		SELECT id, name, description, limit_users, user_id, is_public, created_at, updated_at
+		FROM threads
+		INNER JOIN (%s) AS t
+		ON t.thread_id = threads.id
+	`, inQuery)
+	rows, err := tr.sqlHandler.Query(query)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select")
+	}
+	var threads []*entity.Thread
+	for rows.Next() {
+		var thread entity.Thread
+		var author entity.User
+		if err = rows.Scan(&thread.ID, &thread.Name, &thread.Description, &thread.LimitUsers, &author.ID, &thread.IsPublic, &thread.CreatedAt, &thread.UpdatedAt); err != nil {
+			if rows.CheckNoRows(err) {
+				return nil, nil
+			}
+			return nil, errors.Wrap(err, "failed to scan")
+		}
+		thread.Author = &author
+		threads = append(threads, &thread)
+	}
+	return threads, nil
+}
+
+func (tr *threadRepository) FindByUserUUIDs(userUUIDs []string) ([]*entity.Thread, error) {
+	values := ""
+	for _, userUUID := range userUUIDs {
+		values += fmt.Sprintf("'%s',", userUUID)
+	}
+	values = strings.TrimSuffix(values, ",")
+	query := fmt.Sprintf(`
+		SELECT id, name, description, limit_users, user_id, is_public, created_at, updated_at
+		FROM threads
+		WHERE user_id IN (%s)
+	`, values)
+	rows, err := tr.sqlHandler.Query(query)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to select")
+	}
+	var threads []*entity.Thread
+	for rows.Next() {
+		var thread entity.Thread
+		var author entity.User
+		if err = rows.Scan(&thread.ID, &thread.Name, &thread.Description, &thread.LimitUsers, &author.ID, &thread.IsPublic, &thread.CreatedAt, &thread.UpdatedAt); err != nil {
+			if rows.CheckNoRows(err) {
+				return nil, nil
+			}
+			return nil, errors.Wrap(err, "failed to scan")
+		}
+		thread.Author = &author
+		threads = append(threads, &thread)
+	}
+	return threads, nil
+}
+
+func (tr *threadRepository) FindByNames(names []string) ([]*entity.Thread, error) {
+	query := `
+		SELECT id, name, description, limit_users, user_id, is_public, created_at, updated_at
+		FROM threads
+		WHERE `
+	for _, name := range names {
+		query += "name LIKE '%" + name + "%' OR"
+	}
+	query = strings.TrimSuffix(query, "OR")
+	rows, err := tr.sqlHandler.Query(query)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to select")
 	}

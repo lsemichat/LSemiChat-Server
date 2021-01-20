@@ -29,3 +29,11 @@ func ReadPathParam(r *http.Request, key string) (string, error) {
 	}
 	return mux.Vars(r)[key], nil
 }
+
+func ReadQueryParam(r *http.Request, key string) ([]string, error) {
+	param := r.URL.Query()[key]
+	if len(param) == 0 {
+		return param, errors.Errorf("query param is empty: key=%s", key)
+	}
+	return param, nil
+}
